@@ -389,6 +389,10 @@ footer .f-links a:hover{color:var(--rose-deep);}
   ]
 }
 </script>
+
+<!-- Firebase (게시판/FAQ 실시간 저장용) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -937,8 +941,20 @@ function showToast(msg){
   window._toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
 }
 
+/* ===================== Firebase 설정 ===================== */
+/* 아래 firebaseConfig 값을 본인의 Firebase 프로젝트 설정값으로 교체하세요. */
+const firebaseConfig = {
+  apiKey: "AIzaSyAwu-61R1f_lSZ47g8CEADGunkGgoQjkro",
+  authDomain: "osong-seohan.firebaseapp.com",
+  projectId: "osong-seohan",
+  storageBucket: "osong-seohan.firebasestorage.app",
+  messagingSenderId: "168671581223",
+  appId: "1:168671581223:web:ef9103cc66704701c2ea02"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const ADMIN_PASSCODE = 'osong1234';
-const BOARD_KEY = 'board-posts';
 
 let posts = [];
 let isAdmin = false;
@@ -955,20 +971,27 @@ function escapeHtml(str){
 
 async function loadPosts(){
   try{
-    const res = await window.storage.get(BOARD_KEY, true);
-    posts = res && res.value ? JSON.parse(res.value) : [];
+    const snap = await db.collection('posts').orderBy('createdAt', 'desc').get();
+    posts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }catch(e){
+    console.error(e);
     posts = [];
+    showToast('게시글을 불러오지 못했어요. Firebase 설정을 확인해 주세요.');
   }
   renderPosts();
 }
 
-async function savePosts(){
-  try{
-    await window.storage.set(BOARD_KEY, JSON.stringify(posts), true);
-  }catch(e){
-    showToast('저장 중 문제가 발생했어요. 다시 시도해 주세요.');
-  }
+async function addPostRemote(postData){
+  const docRef = await db.collection('posts').add(postData);
+  return docRef.id;
+}
+
+async function deletePostRemote(id){
+  await db.collection('posts').doc(id).delete();
+}
+
+async function updateReplyRemote(id, reply){
+  await db.collection('posts').doc(id).update({ reply });
 }
 
 function renderPosts(){
@@ -1042,10 +1065,14 @@ document.getElementById('postListWrap').addEventListener('click', async (e)=>{
     } else {
       if(!confirm('이 글을 삭제할까요?')) return;
     }
-    posts = posts.filter(p => String(p.id) !== delPostId);
-    await savePosts();
-    showToast('삭제되었습니다.');
-    renderPosts();
+    try{
+      await deletePostRemote(delPostId);
+      posts = posts.filter(p => String(p.id) !== delPostId);
+      showToast('삭제되었습니다.');
+      renderPosts();
+    }catch(e){
+      showToast('삭제 중 문제가 발생했어요.');
+    }
     return;
   }
 
@@ -1054,21 +1081,30 @@ document.getElementById('postListWrap').addEventListener('click', async (e)=>{
     const textarea = document.querySelector(`[data-reply-input="${saveReplyId}"]`);
     const val = textarea.value.trim();
     if(!val){ showToast('답변 내용을 입력해 주세요.'); return; }
-    const post = posts.find(p => String(p.id) === saveReplyId);
-    post.reply = { content: val, createdAt: new Date().toISOString() };
-    await savePosts();
-    showToast('답변이 등록되었습니다.');
-    renderPosts();
+    const reply = { content: val, createdAt: new Date().toISOString() };
+    try{
+      await updateReplyRemote(saveReplyId, reply);
+      const post = posts.find(p => String(p.id) === saveReplyId);
+      post.reply = reply;
+      showToast('답변이 등록되었습니다.');
+      renderPosts();
+    }catch(e){
+      showToast('답변 저장 중 문제가 발생했어요.');
+    }
     return;
   }
 
   const delReplyId = t.getAttribute('data-del-reply');
   if(delReplyId){
     if(!confirm('답변을 삭제할까요?')) return;
-    const post = posts.find(p => String(p.id) === delReplyId);
-    post.reply = null;
-    await savePosts();
-    renderPosts();
+    try{
+      await updateReplyRemote(delReplyId, null);
+      const post = posts.find(p => String(p.id) === delReplyId);
+      post.reply = null;
+      renderPosts();
+    }catch(e){
+      showToast('답변 삭제 중 문제가 발생했어요.');
+    }
     return;
   }
 });
@@ -1087,18 +1123,23 @@ document.getElementById('postForm').addEventListener('submit', async (e)=>{
   }
 
   const newPost = {
-    id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
     name, password: pass, contact, title, content,
     createdAt: new Date().toISOString(),
     reply: null
   };
-  posts.push(newPost);
-  await savePosts();
-  e.target.reset();
-  showToast('문의가 등록되었어요. 빠르게 답변드릴게요!');
-  openPostId = newPost.id;
-  renderPosts();
-  document.getElementById('postListWrap').scrollIntoView({behavior:'smooth', block:'start'});
+
+  try{
+    const newId = await addPostRemote(newPost);
+    posts.unshift({ id: newId, ...newPost });
+    e.target.reset();
+    showToast('문의가 등록되었어요. 빠르게 답변드릴게요!');
+    openPostId = newId;
+    renderPosts();
+    document.getElementById('postListWrap').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(e){
+    console.error(e);
+    showToast('등록 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
+  }
 });
 
 document.getElementById('adminToggle').addEventListener('click', ()=>{
@@ -1124,14 +1165,15 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
 });
 
 /* ===================== FAQ 답변 (사장님 직접 편집) ===================== */
-const FAQ_KEY = 'faq-answers';
 let faqAnswers = {};
+const faqDocRef = db.collection('site').doc('faq-answers');
 
 async function loadFaqAnswers(){
   try{
-    const res = await window.storage.get(FAQ_KEY, true);
-    faqAnswers = res && res.value ? JSON.parse(res.value) : {};
+    const doc = await faqDocRef.get();
+    faqAnswers = doc.exists ? doc.data() : {};
   }catch(e){
+    console.error(e);
     faqAnswers = {};
   }
   document.querySelectorAll('[data-faq-display]').forEach(el => {
@@ -1147,7 +1189,7 @@ async function loadFaqAnswers(){
 async function saveFaqAnswer(id, text){
   faqAnswers[id] = text;
   try{
-    await window.storage.set(FAQ_KEY, JSON.stringify(faqAnswers), true);
+    await faqDocRef.set({ [id]: text }, { merge: true });
   }catch(e){
     showToast('답변 저장 중 문제가 발생했어요.');
     return false;
