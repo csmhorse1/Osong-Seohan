@@ -1,0 +1,23 @@
+{
+  "updatedAt": null,
+  "posts": [
+    {
+      "title": "블로그 글 제목을 입력해주세요",
+      "link": "https://blog.naver.com/coldwoman77/224310374339",
+      "excerpt": "이 카드는 자동으로 채워질 예정입니다. GitHub Action이 처음 실행되면 실제 블로그 글로 교체됩니다.",
+      "date": ""
+    },
+    {
+      "title": "블로그 글 제목을 입력해주세요",
+      "link": "https://blog.naver.com/coldwoman77/224268241903",
+      "excerpt": "이 카드는 자동으로 채워질 예정입니다. GitHub Action이 처음 실행되면 실제 블로그 글로 교체됩니다.",
+      "date": ""
+    },
+    {
+      "title": "블로그 글 제목을 입력해주세요",
+      "link": "https://blog.naver.com/coldwoman77/224264009723",
+      "excerpt": "이 카드는 자동으로 채워질 예정입니다. GitHub Action이 처음 실행되면 실제 블로그 글로 교체됩니다.",
+      "date": ""
+    }
+  ]
+}

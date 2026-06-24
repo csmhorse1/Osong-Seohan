@@ -621,7 +621,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <h2>THE BLOG</h2>
       <a class="b-readall" href="https://blog.naver.com/coldwoman77" target="_blank" rel="noopener">전체 글 보기</a>
     </div>
-    <div class="blog-grid">
+    <div class="blog-grid" id="blogGrid">
       <article class="blog-card">
         <div class="b-thumb">📝</div>
         <div class="b-body">
@@ -1230,8 +1230,36 @@ document.getElementById('faqList').addEventListener('click', async (e)=>{
   }
 });
 
+/* ===================== 네이버 블로그 최신글 자동 표시 ===================== */
+async function loadBlogPosts(){
+  const grid = document.getElementById('blogGrid');
+  if(!grid) return;
+  try{
+    const res = await fetch('blog-posts.json', { cache: 'no-store' });
+    if(!res.ok) return;
+    const data = await res.json();
+    if(!data.posts || data.posts.length === 0) return;
+
+    grid.innerHTML = data.posts.map(p => `
+      <article class="blog-card">
+        <div class="b-thumb">📝</div>
+        <div class="b-body">
+          <h4>${escapeHtml(p.title)}</h4>
+          ${p.date ? `<div class="b-date">${escapeHtml(p.date)}</div>` : ''}
+          <p class="b-excerpt">${escapeHtml(p.excerpt)}</p>
+          <a class="b-readmore" href="${escapeHtml(p.link)}" target="_blank" rel="noopener">READ MORE</a>
+        </div>
+      </article>
+    `).join('');
+  }catch(e){
+    // 실패 시 처음부터 있던 정적 카드(HTML 기본값)를 그대로 둠
+    console.error('블로그 글 불러오기 실패:', e);
+  }
+}
+
 loadFaqAnswers();
 loadPosts();
+loadBlogPosts();
 </script>
 </body>
 </html>
