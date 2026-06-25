@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매물 등록 | 오송 미소공인중개사사무소</title>
+<style>
+  :root{
+    --yellow:#FFC400;
+    --yellow-deep:#FFB000;
+    --ink:#1A1D1F;
+    --gray-700:#4B5258;
+    --gray-400:#8B9198;
+    --gray-200:#E5E8EB;
+    --gray-100:#F2F4F6;
+    --white:#FFFFFF;
+    --danger:#E5483D;
+    --radius:16px;
+    --radius-sm:10px;
+    font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--gray-100);
+    color:var(--ink);
+  }
+  .topbar{
+    background:var(--ink);
+    color:var(--white);
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .topbar .tag{
+    background:var(--yellow);
+    color:var(--ink);
+    font-weight:800;
+    font-size:12px;
+    padding:4px 8px;
+    border-radius:6px;
+  }
+  .topbar h1{
+    font-size:17px;
+    margin:0;
+    font-weight:700;
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:20px 16px 100px;
+  }
+  .progress{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+  }
+  .progress span{
+    flex:1;
+    height:4px;
+    border-radius:4px;
+    background:var(--gray-200);
+    transition:background .2s;
+  }
+  .progress span.active{background:var(--yellow);}
+  .card{
+    background:var(--white);
+    border-radius:var(--radius);
+    padding:22px 20px;
+    margin-bottom:14px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card-head{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .card-head .num{
+    width:24px;height:24px;
+    border-radius:50%;
+    background:var(--ink);
+    color:var(--yellow);
+    font-size:12px;
+    font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .card-head h2{
+    font-size:16px;
+    margin:0;
+    font-weight:700;
+  }
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--gray-700);
+    margin-bottom:6px;
+  }
+  label .req{color:var(--danger);margin-left:2px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid var(--gray-200);
+    border-radius:var(--radius-sm);
+    font-size:14px;
+    background:var(--white);
+    color:var(--ink);
+    font-family:inherit;
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:none;
+    border-color:var(--yellow-deep);
+  }
+  textarea{resize:vertical;min-height:80px;line-height:1.5;}
+  .row{display:flex;gap:10px;}
+  .row > *{flex:1;min-width:0;}
+  .row3 > *{flex:1;min-width:0;}
+  .seg{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .seg button{
+    flex:1;
+    min-width:70px;
+    padding:10px 12px;
+    border-radius:var(--radius-sm);
+    border:1.5px solid var(--gray-200);
+    background:var(--white);
+    font-size:13px;
+    font-weight:600;
+    color:var(--gray-700);
+    cursor:pointer;
+  }
+  .seg button.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--yellow);
+  }
+  .unit-suffix{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .unit-suffix span{
+    font-size:13px;
+    color:var(--gray-400);
+    white-space:nowrap;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--gray-400);
+    margin-top:6px;
+    line-height:1.5;
+  }
+  .moneyrow{display:flex;gap:8px;}
+  .moneyrow select{flex:0 0 92px;}
+  .moneyrow input{flex:1;}
+  .radiolist,.checklist{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:4px;
+  }
+  .checklist{flex-direction:row;flex-wrap:wrap;gap:14px;}
+  .radio-opt,.check-opt{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    font-size:13.5px;
+    color:var(--gray-700);
+    line-height:1.5;
+    cursor:pointer;
+  }
+  .check-opt{align-items:center;font-size:13px;}
+  .radio-opt input,.check-opt input{
+    margin-top:2px;
+    flex-shrink:0;
+    accent-color:var(--yellow-deep);
+    width:16px;height:16px;
+  }
+  .check-opt input{margin-top:0;}
+  /* 사진 업로드 */
+  .photo-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+  }
+  .photo-slot{
+    aspect-ratio:1;
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    position:relative;
+    background:var(--gray-100);
+  }
+  .photo-slot img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .photo-slot .rm{
+    position:absolute;top:4px;right:4px;
+    width:20px;height:20px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.55);
+    color:#fff;
+    font-size:12px;
+    border:none;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .photo-add{
+    aspect-ratio:1;
+    border-radius:var(--radius-sm);
+    border:1.5px dashed var(--gray-200);
+    background:var(--gray-100);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--gray-400);
+    font-size:24px;
+    font-weight:300;
+    gap:2px;
+  }
+  .photo-add small{font-size:11px;font-weight:600;}
+  .uploading-badge{
+    margin-top:10px;
+    font-size:12px;
+    color:var(--gray-700);
+    display:none;
+  }
+  .uploading-badge.show{display:block;}
+  /* 중개사 정보 카드 (읽기전용, 맨 아래) */
+  .agent-card{
+    background:var(--ink);
+    color:var(--white);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:14px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .agent-card .ava{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--yellow);
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:var(--ink);
+    font-size:18px;
+  }
+  .agent-card .info b{font-size:15px;}
+  .agent-card .info div{font-size:12.5px;color:#C9CCD1;margin-top:4px;line-height:1.6;}
+  .agent-card .badge{
+    background:var(--yellow);color:var(--ink);
+    font-size:11px;font-weight:800;
+    padding:2px 7px;border-radius:5px;
+    margin-left:6px;
+  }
+  /* 제출 바 */
+  .submitbar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:var(--white);
+    border-top:1px solid var(--gray-200);
+    padding:12px 16px;
+    display:flex;
+    gap:10px;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .submitbar button{
+    flex:1;
+    padding:15px;
+    border-radius:var(--radius-sm);
+    font-size:15px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-cancel{background:var(--gray-100);color:var(--gray-700);}
+  .btn-submit{background:var(--yellow);color:var(--ink);}
+  .btn-submit:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;}
+  .toast{
+    position:fixed;
+    top:20px;left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:var(--white);
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    z-index:999;
+    opacity:0;
+    transition:opacity .25s;
+    pointer-events:none;
+  }
+  .toast.show{opacity:1;}
+  .config-warning{
+    background:#FFF3CD;
+    border:1px solid #FFC400;
+    border-radius:var(--radius-sm);
+    padding:12px 14px;
+    font-size:12.5px;
+    line-height:1.6;
+    color:#6B5200;
+    margin-bottom:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="tag">미소</span>
+  <h1>매물 등록</h1>
+</div>
+
+<div class="wrap">
+
+  <div class="progress" id="progressBar">
+    <span class="active"></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="config-warning" id="configWarning">
+    ⚠ 아직 연동 설정이 안 됐어요. 이 파일 맨 아래 <code>&lt;script&gt;</code> 안의
+    <code>firebaseConfig</code> 와 <code>CLOUDINARY_CLOUD_NAME / UPLOAD_PRESET</code> 값을 채워주세요.
+  </div>
+
+  <form id="listingForm">
+
+    <!-- 1. 위치/구조 -->
+    <div class="card">
+      <div class="card-head"><div class="num">1</div><h2>위치 / 구조</h2></div>
+
+      <div class="field">
+        <label>매물종류 <span class="req">*</span></label>
+        <select name="propertyType" required>
+          <option value="">선택</option>
+          <option value="아파트">아파트</option>
+          <option value="오피스텔">오피스텔</option>
+          <option value="빌라/연립">빌라/연립</option>
+          <option value="단독/다가구">단독/다가구</option>
+          <option value="상가">상가</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>소재지 <span class="req">*</span></label>
+        <div class="row">
+          <input type="text" name="addrProvince" placeholder="시/도" value="충청북도" required>
+          <input type="text" name="addrCity" placeholder="시/군/구" value="청주시 흥덕구" required>
+          <input type="text" name="addrDong" placeholder="읍/면/동" value="오송읍" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>단지명</label>
+        <input type="text" name="complexName" placeholder="예: 오송역서한이다음노블리스">
+      </div>
+
+      <div class="field">
+        <label>건축물용도 <span class="req">*</span></label>
+        <select name="buildingUse" required>
+          <option value="">선택</option>
+          <option value="공동주택">공동주택</option>
+          <option value="업무시설">업무시설</option>
+          <option value="숙박시설">숙박시설</option>
+          <option value="근린생활시설">근린생활시설</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>상세주소 (동/호 - 비공개)</label>
+        <div class="row">
+          <input type="text" name="addrDongNo" placeholder="동 (예: 1동)">
+          <input type="text" name="addrHoNo" placeholder="호 (예: 102호)">
+        </div>
+        <div class="hint">매물 카드에는 노출되지 않으며 상담 시에만 안내됩니다.</div>
+      </div>
+
+      <div class="field">
+        <label>면적 <span class="req">*</span></label>
+        <div class="row">
+          <div class="unit-suffix"><input type="number" step="0.01" name="areaSupply" placeholder="공급면적" required><span>㎡</span></div>
+          <div class="unit-suffix"><input type="number" step="0.01" name="areaExclusive" placeholder="전용면적" required><span>㎡</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>층 / 총층 <span class="req">*</span></label>
+        <div class="row">
+          <input type="text" name="floorCurrent" placeholder="해당층 (예: 25 또는 중)" required>
+          <input type="number" name="floorTotal" placeholder="총층" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>방향 (안방 기준) / 현관구조</label>
+        <div class="row">
+          <select name="direction">
+            <option value="">방향 선택</option>
+            <option value="남향">남향</option>
+            <option value="남동향">남동향</option>
+            <option value="남서향">남서향</option>
+            <option value="동향">동향</option>
+            <option value="서향">서향</option>
+            <option value="북향">북향</option>
+          </select>
+          <select name="entranceType">
+            <option value="">현관구조</option>
+            <option value="계단식">계단식</option>
+            <option value="복도식">복도식</option>
+            <option value="혼합식">혼합식</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>방수 / 욕실수 <span class="req">*</span></label>
+        <div class="row">
+          <div class="unit-suffix"><input type="number" name="roomCount" placeholder="방수" required><span>개</span></div>
+          <div class="unit-suffix"><input type="number" name="bathCount" placeholder="욕실수" required><span>개</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>내부구조</label>
+        <div class="seg" data-name="innerStructure">
+          <button type="button" data-value="단층식">단층식</button>
+          <button type="button" data-value="복층식">복층식</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 관리비 -->
+    <div class="card">
+      <div class="card-head"><div class="num">2</div><h2>관리비</h2></div>
+
+      <div class="field">
+        <label>부과기준</label>
+        <div class="seg" data-name="feeBasis">
+          <button type="button" data-value="직전월관리비">직전월관리비</button>
+          <button type="button" data-value="최근3개월평균">최근3개월평균</button>
+          <button type="button" data-value="최근1년평균">최근1년평균</button>
+          <button type="button" data-value="기타">기타</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>세부관리비 <span class="req">*</span></label>
+        <div class="seg" data-name="feeDetailType">
+          <button type="button" data-value="정액관리비">정액관리비</button>
+          <button type="button" data-value="기타부과">기타부과</button>
+          <button type="button" data-value="확인불가">확인불가</button>
+          <button type="button" data-value="정액관리비2">정액관리비 2</button>
+        </div>
+        <div class="hint">
+          세부관리비는 중개사 책임하에 입력합니다.<br>
+          · 정액관리비: 정액(실비 일부 포함)으로 관리비 부과 시<br>
+          · 기타부과: 기타(정액이 아닌 경우 등)로 관리비 부과 시<br>
+          · 확인불가: 관리비 확인 불가 시<br>
+          · 정액관리비 2: 정액관리비이지만 중개의뢰인이 세부내역 미 고지 시
+        </div>
+      </div>
+
+      <div class="field">
+        <label>부과사유 <span class="req">*</span></label>
+        <div class="radiolist">
+          <label class="radio-opt"><input type="radio" name="feeReason" value="관리규약 등에 따라 부과" required> 관리규약 등에 따라 부과</label>
+          <label class="radio-opt"><input type="radio" name="feeReason" value="공용관리비는 면적/세대별로 부과하고 사용료는 사용량에 따른 부과"> 공용관리비는 면적/세대별로 부과하고 사용료는 사용량에 따른 부과</label>
+          <label class="radio-opt"><input type="radio" name="feeReason" value="전체 사용량을 세대수로 나누어 부과"> 전체 사용량을 세대수로 나누어 부과</label>
+          <label class="radio-opt"><input type="radio" name="feeReason" value="세대별 사용량(별도 계량기)에 따라 부과"> 세대별 사용량(별도 계량기)에 따라 부과</label>
+          <label class="radio-opt"><input type="radio" name="feeReason" value="정액관리비가 10만원 미만인 경우"> 정액관리비가 10만원 미만인 경우</label>
+          <label class="radio-opt"><input type="radio" name="feeReason" value="기타" id="feeReasonEtcRadio"> 기타 - 직접입력</label>
+        </div>
+        <input type="text" name="feeReasonEtc" id="feeReasonEtcInput" placeholder="기타 사유를 직접 입력해주세요" style="margin-top:8px;display:none;">
+      </div>
+
+      <div class="field">
+        <label>금액 (단위: 원) <span class="req">*</span></label>
+        <div class="unit-suffix"><input type="number" name="feeTotalAmount" placeholder="예: 216479" required><span>원</span></div>
+      </div>
+
+      <div class="field">
+        <label>포함항목</label>
+        <div class="checklist" id="feeIncludedItems">
+          <label class="check-opt"><input type="checkbox" value="공용"> 공용</label>
+          <label class="check-opt"><input type="checkbox" value="전기"> 전기</label>
+          <label class="check-opt"><input type="checkbox" value="수도"> 수도</label>
+          <label class="check-opt"><input type="checkbox" value="가스"> 가스</label>
+          <label class="check-opt"><input type="checkbox" value="난방"> 난방</label>
+          <label class="check-opt"><input type="checkbox" value="인터넷"> 인터넷</label>
+          <label class="check-opt"><input type="checkbox" value="TV"> TV</label>
+          <label class="check-opt"><input type="checkbox" value="기타"> 기타</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>건축물 일자 (사용승인일)</label>
+        <input type="date" name="buildDate">
+      </div>
+
+      <div class="field">
+        <label>주차대수</label>
+        <div class="row">
+          <input type="number" step="0.01" name="parkingPerHousehold" placeholder="세대당 주차대수">
+          <input type="number" name="parkingTotal" placeholder="총 주차대수">
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 가격/입주일/상세정보 -->
+    <div class="card">
+      <div class="card-head"><div class="num">3</div><h2>가격 / 입주일 / 상세정보</h2></div>
+
+      <div class="field">
+        <label>거래종류 <span class="req">*</span></label>
+        <div class="seg" data-name="dealType">
+          <button type="button" data-value="매매">매매</button>
+          <button type="button" data-value="전세">전세</button>
+          <button type="button" data-value="월세">월세</button>
+          <button type="button" data-value="단기">단기</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>매매가 / 보증금 <span class="req">*</span></label>
+        <div class="unit-suffix"><input type="number" name="priceMain" placeholder="예: 30000 (만원 단위)" required><span>만원</span></div>
+      </div>
+
+      <div class="field" id="rentFeeField" style="display:none;">
+        <label>월세</label>
+        <div class="unit-suffix"><input type="number" name="priceMonthly" placeholder="월세 금액"><span>만원</span></div>
+      </div>
+
+      <div class="field">
+        <label>융자금</label>
+        <input type="text" name="loanAmount" placeholder="예: 없음 / 1억2,000">
+      </div>
+
+      <div class="field">
+        <label>입주가능일</label>
+        <div class="seg" data-name="moveInType">
+          <button type="button" data-value="즉시입주">즉시입주</button>
+          <button type="button" data-value="입주일협의">입주일협의</button>
+          <button type="button" data-value="협의가능">협의가능</button>
+        </div>
+        <input type="date" name="moveInDate" style="margin-top:10px;">
+      </div>
+
+      <div class="field">
+        <label>매물특징 (한 줄 요약)</label>
+        <input type="text" name="featureSummary" placeholder="예: 2027년 7월 잔금 & 등기조건, 로얄층 로얄동">
+      </div>
+
+      <div class="field">
+        <label>상세설명</label>
+        <textarea name="description" placeholder="옵션, 단지 소개, 주변 환경 등 자유롭게 입력해주세요."></textarea>
+      </div>
+    </div>
+
+    <!-- 4. 매물사진 -->
+    <div class="card">
+      <div class="card-head"><div class="num">4</div><h2>매물사진</h2></div>
+
+      <div class="field">
+        <label>사진 등록 (최대 20장)</label>
+        <div class="photo-grid" id="photoGrid">
+          <div class="photo-add" id="photoAddBtn">
+            <span>+</span>
+            <small>사진추가</small>
+          </div>
+        </div>
+        <input type="file" id="photoInput" accept="image/jpeg,image/png,image/gif" multiple hidden>
+        <div class="hint">JPG, GIF, PNG만 가능 · 1장당 5MB 이하 권장 · 가로 400px 이상 권장</div>
+        <div class="uploading-badge" id="uploadingBadge">사진 업로드 중...</div>
+      </div>
+
+      <div class="field">
+        <label>중개사 메모 (비공개)</label>
+        <textarea name="agentMemo" placeholder="매물 노출 시에 공개되지 않습니다."></textarea>
+      </div>
+    </div>
+
+    <!-- 연락처 노출 -->
+    <div class="card">
+      <div class="card-head"><div class="num">5</div><h2>연락처 노출 선택</h2></div>
+      <div class="hint" style="color:#B23B2E;font-weight:600;margin-bottom:14px;">
+        &lt;주의&gt; 중개사무소의 연락처(휴대전화번호 포함)는 등록관청에 신고된 번호만 사용하시기 바랍니다. (공인중개사법 제18조의2 시행)
+      </div>
+      <div class="field">
+        <label>중개업소 대표전화</label>
+        <div style="padding:12px 14px;background:var(--gray-100);border-radius:var(--radius-sm);font-size:14px;font-weight:600;">
+          043-233-5949
+        </div>
+      </div>
+      <div class="field">
+        <label>휴대폰 번호 <span class="req">*</span></label>
+        <div class="row3">
+          <input type="text" name="mobile1" placeholder="010" maxlength="3" value="010" required>
+          <input type="text" name="mobile2" placeholder="0000" maxlength="4" required>
+          <input type="text" name="mobile3" placeholder="0000" maxlength="4" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>노출여부</label>
+        <div class="seg" data-name="contactVisibility">
+          <button type="button" data-value="대표전화+휴대폰노출">대표전화번호 + 휴대폰번호 노출</button>
+          <button type="button" data-value="대표전화만노출">대표전화번호만 노출</button>
+          <button type="button" data-value="휴대폰만노출">휴대폰번호만 노출</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 중개사 정보 (가장 아래, 고정 표시) -->
+    <div class="agent-card">
+      <div class="ava">미소</div>
+      <div class="info">
+        <b>오송미소공인중개사사무소</b><span class="badge">대표 조상미</span>
+        <div>충청북도 청주시 흥덕구 오송읍 봉산리<br>오송생명14로 217, 단지내상가 1동 102호 (오송역서한이다음 노블리스)</div>
+        <div>☎ 043-233-5949 · 010-7660-0411</div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<div class="submitbar">
+  <button type="button" class="btn-cancel" onclick="if(confirm('작성중인 내용이 사라집니다. 취소할까요?')) document.getElementById('listingForm').reset();">취소</button>
+  <button type="button" class="btn-submit" id="submitBtn">등록하기</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================ -->
+<!-- Firebase (Firestore) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ▼▼▼ 1) 기존 게시판/FAQ에서 쓰고 있는 firebaseConfig를 그대로 붙여넣어주세요 ▼▼▼
+  const firebaseConfig = {
+    apiKey: "AIzaSyAwu-61R1f_lSZ47g8CEADGunkGgoQjkro",
+    authDomain: "osong-seohan.firebaseapp.com",
+    projectId: "osong-seohan",
+    storageBucket: "osong-seohan.firebasestorage.app",
+    messagingSenderId: "168671581223",
+    appId: "1:168671581223:web:ef9103cc66704701c2ea02"
+  };
+  // ▲▲▲ ------------------------------------------------------- ▲▲▲
+
+  // ▼▼▼ 2) Cloudinary 무료 계정 생성 후 cloud name / unsigned preset 입력 ▼▼▼
+  // 가입: https://cloudinary.com (카드 등록 불필요)
+  // Settings > Upload > Upload presets > Add upload preset > Signing Mode: Unsigned
+  const CLOUDINARY_CLOUD_NAME = "dsvx4ioyo";
+  const CLOUDINARY_UPLOAD_PRESET = "osong-seohan";
+  // ▲▲▲ ------------------------------------------------------- ▲▲▲
+
+  const isConfigured = firebaseConfig.apiKey !== "여기에_채워주세요" &&
+                        CLOUDINARY_CLOUD_NAME !== "여기에_채워주세요";
+
+  if (isConfigured) {
+    document.getElementById('configWarning').style.display = 'none';
+  }
+
+  let app, db;
+  try {
+    if (isConfigured) {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+    }
+  } catch (e) {
+    console.error("Firebase 초기화 오류:", e);
+  }
+
+  // ---------- 토글(세그먼트) 버튼 처리 ----------
+  const segValues = {};
+  document.querySelectorAll('.seg').forEach(seg => {
+    const name = seg.dataset.name;
+    segValues[name] = '';
+    seg.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        segValues[name] = btn.dataset.value;
+        if (name === 'dealType') {
+          document.getElementById('rentFeeField').style.display =
+            (btn.dataset.value === '월세' || btn.dataset.value === '단기') ? 'block' : 'none';
+        }
+      });
+    });
+  });
+
+  // ---------- 부과사유 '기타' 직접입력 토글 ----------
+  document.querySelectorAll('input[name="feeReason"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('feeReasonEtcInput').style.display =
+        document.getElementById('feeReasonEtcRadio').checked ? 'block' : 'none';
+    });
+  });
+
+  // ---------- 진행 바 (4섹션 스크롤 감지) ----------
+  const cards = document.querySelectorAll('.card');
+  const progressSpans = document.querySelectorAll('#progressBar span');
+  window.addEventListener('scroll', () => {
+    let activeIdx = 0;
+    cards.forEach((c, i) => {
+      if (c.getBoundingClientRect().top < window.innerHeight * 0.5) activeIdx = i;
+    });
+    progressSpans.forEach((s, i) => s.classList.toggle('active', i <= activeIdx));
+  });
+
+  // ---------- 사진 업로드 ----------
+  const photoGrid = document.getElementById('photoGrid');
+  const photoAddBtn = document.getElementById('photoAddBtn');
+  const photoInput = document.getElementById('photoInput');
+  const uploadingBadge = document.getElementById('uploadingBadge');
+  let uploadedPhotoUrls = [];
+
+  photoAddBtn.addEventListener('click', () => photoInput.click());
+
+  photoInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (uploadedPhotoUrls.length + files.length > 20) {
+      alert('사진은 최대 20장까지 등록할 수 있습니다.');
+      return;
+    }
+    if (!isConfigured) {
+      alert('아직 Cloudinary 설정이 완료되지 않아 사진 업로드를 미리보기로만 표시합니다. 실제 등록 전에 설정값을 채워주세요.');
+    }
+    uploadingBadge.classList.add('show');
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`${file.name} : 5MB를 초과하여 제외되었습니다.`);
+        continue;
+      }
+      const localUrl = URL.createObjectURL(file);
+      const slot = document.createElement('div');
+      slot.className = 'photo-slot';
+      slot.innerHTML = `<img src="${localUrl}"><button type="button" class="rm">×</button>`;
+      photoGrid.insertBefore(slot, photoAddBtn);
+
+      let finalUrl = localUrl;
+      if (isConfigured) {
+        try {
+          finalUrl = await uploadToCloudinary(file);
+        } catch (err) {
+          console.error(err);
+          alert(`${file.name} 업로드 실패`);
+          slot.remove();
+          continue;
+        }
+      }
+      uploadedPhotoUrls.push(finalUrl);
+      slot.querySelector('.rm').addEventListener('click', () => {
+        uploadedPhotoUrls = uploadedPhotoUrls.filter(u => u !== finalUrl);
+        slot.remove();
+      });
+    }
+    uploadingBadge.classList.remove('show');
+    photoInput.value = '';
+  });
+
+  async function uploadToCloudinary(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) throw new Error('Cloudinary upload failed');
+    const data = await res.json();
+    return data.secure_url;
+  }
+
+  // ---------- 토스트 ----------
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ---------- 등록하기 ----------
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const form = document.getElementById('listingForm');
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (!segValues.dealType) { alert('거래종류를 선택해주세요.'); return; }
+    if (!segValues.feeDetailType) { alert('세부관리비 항목을 선택해주세요.'); return; }
+
+    const fd = new FormData(form);
+    const get = (k) => fd.get(k) || '';
+
+    const listing = {
+      propertyType: get('propertyType'),
+      address: {
+        province: get('addrProvince'),
+        city: get('addrCity'),
+        dong: get('addrDong'),
+        dongNo: get('addrDongNo'),
+        hoNo: get('addrHoNo')
+      },
+      complexName: get('complexName'),
+      buildingUse: get('buildingUse'),
+      area: { supply: get('areaSupply'), exclusive: get('areaExclusive') },
+      floor: { current: get('floorCurrent'), total: get('floorTotal') },
+      direction: get('direction'),
+      entranceType: get('entranceType'),
+      roomCount: get('roomCount'),
+      bathCount: get('bathCount'),
+      innerStructure: segValues.innerStructure || '',
+      maintenanceFee: {
+        detailType: segValues.feeDetailType || '',
+        basis: segValues.feeBasis || '',
+        reason: fd.get('feeReason') || '',
+        reasonEtc: get('feeReasonEtc'),
+        amount: get('feeTotalAmount'),
+        includedItems: Array.from(document.querySelectorAll('#feeIncludedItems input:checked')).map(c => c.value)
+      },
+      buildDate: get('buildDate'),
+      parking: { perHousehold: get('parkingPerHousehold'), total: get('parkingTotal') },
+      dealType: segValues.dealType || '',
+      priceMain: get('priceMain'),
+      priceMonthly: get('priceMonthly'),
+      loanAmount: get('loanAmount'),
+      moveIn: { type: segValues.moveInType || '', date: get('moveInDate') },
+      featureSummary: get('featureSummary'),
+      description: get('description'),
+      photos: uploadedPhotoUrls,
+      agentMemo: get('agentMemo'),
+      contact: {
+        mobile: `${get('mobile1')}-${get('mobile2')}-${get('mobile3')}`,
+        visibility: segValues.contactVisibility || '대표전화+휴대폰노출'
+      },
+      agent: {
+        office: "오송미소공인중개사사무소",
+        ceo: "조상미",
+        officePhone: "043-233-5949"
+      },
+      status: "공개",
+      createdAt: isConfigured ? serverTimestamp() : new Date().toISOString()
+    };
+
+    if (!isConfigured) {
+      console.log('미리보기(설정 미완료) - 저장될 데이터:', listing);
+      alert('Firebase / Cloudinary 설정이 아직 완료되지 않아 실제로 저장되지 않았습니다.\n콘솔에 저장될 데이터를 출력했습니다.');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '등록 중...';
+    try {
+      await addDoc(collection(db, "listings"), listing);
+      showToast('매물이 등록되었습니다 ✓');
+      form.reset();
+      uploadedPhotoUrls = [];
+      photoGrid.querySelectorAll('.photo-slot').forEach(el => el.remove());
+      document.querySelectorAll('.seg button.active').forEach(b => b.classList.remove('active'));
+      Object.keys(segValues).forEach(k => segValues[k] = '');
+      document.getElementById('rentFeeField').style.display = 'none';
+    } catch (err) {
+      console.error(err);
+      alert('등록 중 오류가 발생했습니다: ' + err.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '등록하기';
+    }
+  });
+</script>
+</body>
+</html>
