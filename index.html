@@ -308,6 +308,44 @@ footer .f-links a:hover{color:var(--rose-deep);}
 
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--gold-pale);padding:13px 22px;border-radius:30px;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:200;white-space:nowrap;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- 실매물 카드 (Firestore 연동) ---------- */
+.card-listing{cursor:pointer;transition:transform .15s;}
+.card-listing:active{transform:scale(0.98);}
+.card-listing .thumb img{width:100%;height:100%;object-fit:cover;}
+.card-listing .badge2{position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:10.5px;padding:3px 9px;border-radius:12px;font-weight:700;}
+
+.listing-modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(25,31,40,0.6);z-index:200;
+  align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);
+}
+.listing-modal-overlay.open{display:flex;}
+.listing-modal{
+  background:var(--white);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;
+  border-radius:24px 24px 0 0;padding:26px 20px 40px;position:relative;
+  animation:lmSlideUp .25s ease-out;
+}
+@media (min-width:700px){
+  .listing-modal-overlay{align-items:center;}
+  .listing-modal{border-radius:var(--radius-lg);max-height:84vh;}
+}
+@keyframes lmSlideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.lm-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:var(--cream-deep);font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center;z-index:2;}
+.lm-gallery{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 -20px 18px;padding-left:20px;padding-right:20px;scroll-snap-type:x mandatory;}
+.lm-gallery img{flex:0 0 78%;height:220px;object-fit:cover;border-radius:var(--radius-md);scroll-snap-align:start;}
+@media (min-width:600px){.lm-gallery img{flex:0 0 280px;height:240px;}}
+.lm-badge{background:var(--rose-deep);color:var(--cream);font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:14px;display:inline-block;margin-bottom:10px;}
+.lm-title{font-size:21px;font-weight:700;margin-bottom:4px;}
+.lm-price{font-family:'Noto Sans KR',sans-serif;font-size:22px;font-weight:700;color:var(--rose-deep);margin-bottom:18px;}
+.lm-section{border-top:1px solid var(--line);padding-top:14px;margin-top:14px;}
+.lm-section h4{font-size:13px;color:var(--ink-soft);font-weight:700;letter-spacing:.04em;margin-bottom:10px;}
+.lm-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--cream-deep);}
+.lm-row span:first-child{color:var(--ink-soft);}
+.lm-feature{font-size:14px;background:var(--cream-deep);padding:12px 14px;border-radius:var(--radius-sm);margin-bottom:6px;}
+.lm-desc{font-size:14px;color:var(--ink-soft);line-height:1.7;white-space:pre-wrap;}
+.lm-contact{background:var(--rose-deep);color:var(--cream);border-radius:var(--radius-md);padding:16px;margin-top:18px;}
+.lm-contact .lc-name{font-weight:700;font-size:15px;}
+.lm-contact a{display:inline-flex;align-items:center;gap:8px;background:var(--rose);color:var(--ink);font-weight:700;font-size:14px;padding:11px 18px;border-radius:24px;margin-top:10px;}
 </style>
 <script type="application/ld+json">
 {
@@ -578,38 +616,20 @@ footer .f-links a:hover{color:var(--rose-deep);}
   </div>
 
   <div class="wrap" style="margin-top:30px;">
-    <p class="section-sub" style="margin-top:0;">그 외 진행중인 예시 매물입니다. 실제 보유 매물로 교체해 주세요.</p>
+    <p class="section-sub" style="margin-top:0;">사장님이 직접 등록하신 실제 매물입니다.</p>
   </div>
-  <div class="scroller">
-    <article class="card-listing">
-      <div class="thumb"><span class="tag">매매</span>🏢</div>
-      <div class="body">
-        <div class="price">3억 9,500만원</div>
-        <div class="meta">오송서한이다음노블리스 · 84㎡ (34평) · 15/22층</div>
-        <div class="loc">📍 단지 내 · 역세권 도보 8분</div>
-        <a class="more-link" href="tel:0432335949">상담 문의 →</a>
-      </div>
-    </article>
-    <article class="card-listing">
-      <div class="thumb"><span class="tag">전세</span>🏠</div>
-      <div class="body">
-        <div class="price">2억 4,000만원</div>
-        <div class="meta">오송서한이다음노블리스 · 59㎡ · 즉시입주</div>
-        <div class="loc">📍 단지 내 · 첨단의료복합단지 인근</div>
-        <a class="more-link" href="tel:0432335949">상담 문의 →</a>
-      </div>
-    </article>
-    <article class="card-listing">
-      <div class="thumb"><span class="tag">월세</span>🏬</div>
-      <div class="body">
-        <div class="price">보 3,000 / 월 120만원</div>
-        <div class="meta">서한이다음노블리스 단지 내 1층 상가 · 56㎡</div>
-        <div class="loc">📍 오송역 광장 도보 5분</div>
-        <a class="more-link" href="tel:0432335949">상담 문의 →</a>
-      </div>
-    </article>
+  <div class="scroller" id="liveListingsScroller">
+    <p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">매물을 불러오는 중...</p>
   </div>
 </section>
+
+<!-- ===== 매물 상세 모달 ===== -->
+<div id="listingModalOverlay" class="listing-modal-overlay">
+  <div class="listing-modal">
+    <button class="lm-close" id="listingModalClose">×</button>
+    <div id="listingModalBody"></div>
+  </div>
+</div>
 
 <div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
 
@@ -1257,9 +1277,113 @@ async function loadBlogPosts(){
   }
 }
 
+/* ===================== 실제 매물 (매물등록 페이지에서 등록한 listings) ===================== */
+let liveListings = [];
+
+const dealTagEmoji = { "매매": "🏢", "전세": "🏠", "월세": "🏬", "단기": "🏘️" };
+
+function formatPrice(listing){
+  const main = listing.priceMain ? Number(listing.priceMain).toLocaleString() : "";
+  if(listing.dealType === "월세" || listing.dealType === "단기"){
+    const monthly = listing.priceMonthly ? Number(listing.priceMonthly).toLocaleString() : "0";
+    return `보 ${main} / 월 ${monthly}`;
+  }
+  return `${main}만원`;
+}
+
+async function loadListings(){
+  const scroller = document.getElementById('liveListingsScroller');
+  if(!scroller) return;
+  try{
+    const snap = await db.collection('listings').orderBy('createdAt','desc').limit(20).get();
+    liveListings = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }catch(e){
+    console.error('매물 불러오기 실패:', e);
+    scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">매물을 불러오지 못했습니다.</p>`;
+    return;
+  }
+  if(liveListings.length === 0){
+    scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">등록된 매물이 아직 없습니다.</p>`;
+    return;
+  }
+  scroller.innerHTML = liveListings.map((l, idx) => `
+    <article class="card-listing" data-listing-idx="${idx}">
+      <div class="thumb">
+        <span class="tag">${escapeHtml(l.dealType || '')}</span>
+        ${l.photos && l.photos[0] ? `<img src="${escapeHtml(l.photos[0])}" alt="${escapeHtml(l.complexName||'매물 사진')}">` : (dealTagEmoji[l.dealType] || '🏠')}
+      </div>
+      <div class="body">
+        <div class="price">${formatPrice(l)}</div>
+        <div class="meta">${escapeHtml(l.complexName||'')} · ${escapeHtml((l.area&&l.area.exclusive)||'')}㎡ · ${escapeHtml((l.floor&&l.floor.current)||'')}층</div>
+        <div class="loc">📍 ${escapeHtml(l.featureSummary || '상세보기를 눌러 확인하세요')}</div>
+        <a class="more-link" data-listing-idx="${idx}">상세보기 →</a>
+      </div>
+    </article>
+  `).join('');
+}
+
+function renderListingModal(l){
+  const fee = l.maintenanceFee || {};
+  const includedItems = (fee.includedItems || []).join(', ');
+  const photosHtml = (l.photos || []).map(p => `<img src="${escapeHtml(p)}" alt="매물사진">`).join('');
+  const contact = l.contact || {};
+  const agent = l.agent || {};
+
+  document.getElementById('listingModalBody').innerHTML = `
+    ${photosHtml ? `<div class="lm-gallery">${photosHtml}</div>` : ''}
+    <span class="lm-badge">${escapeHtml(l.dealType||'')}</span>
+    <div class="lm-title">${escapeHtml(l.complexName || l.propertyType || '매물')}</div>
+    <div class="lm-price">${formatPrice(l)}</div>
+
+    <div class="lm-section">
+      <h4>위치 / 구조</h4>
+      <div class="lm-row"><span>매물종류</span><span>${escapeHtml(l.propertyType||'-')}</span></div>
+      <div class="lm-row"><span>면적</span><span>${escapeHtml((l.area&&l.area.supply)||'-')}㎡ / ${escapeHtml((l.area&&l.area.exclusive)||'-')}㎡</span></div>
+      <div class="lm-row"><span>층/총층</span><span>${escapeHtml((l.floor&&l.floor.current)||'-')} / ${escapeHtml((l.floor&&l.floor.total)||'-')}층</span></div>
+      <div class="lm-row"><span>방향</span><span>${escapeHtml(l.direction||'-')}</span></div>
+      <div class="lm-row"><span>방수/욕실수</span><span>${escapeHtml(l.roomCount||'-')}개 / ${escapeHtml(l.bathCount||'-')}개</span></div>
+    </div>
+
+    <div class="lm-section">
+      <h4>관리비</h4>
+      <div class="lm-row"><span>세부관리비</span><span>${escapeHtml(fee.detailType||'-')}</span></div>
+      <div class="lm-row"><span>금액</span><span>${fee.amount ? Number(fee.amount).toLocaleString()+'원' : '-'}</span></div>
+      <div class="lm-row"><span>포함항목</span><span>${escapeHtml(includedItems||'-')}</span></div>
+    </div>
+
+    <div class="lm-section">
+      <h4>가격 / 입주일</h4>
+      <div class="lm-row"><span>융자금</span><span>${escapeHtml(l.loanAmount||'없음')}</span></div>
+      <div class="lm-row"><span>입주가능일</span><span>${escapeHtml((l.moveIn&&l.moveIn.type)||'-')}</span></div>
+    </div>
+
+    ${l.featureSummary ? `<div class="lm-section"><h4>매물특징</h4><div class="lm-feature">${escapeHtml(l.featureSummary)}</div></div>` : ''}
+    ${l.description ? `<div class="lm-section"><h4>상세설명</h4><p class="lm-desc">${escapeHtml(l.description)}</p></div>` : ''}
+
+    <div class="lm-contact">
+      <div class="lc-name">${escapeHtml(agent.office || '오송미소공인중개사사무소')} · 대표 ${escapeHtml(agent.ceo || '조상미')}</div>
+      <div style="font-size:13px;margin-top:4px;opacity:0.85;">연락처 노출: ${escapeHtml(contact.visibility||'-')}</div>
+      <a href="tel:${escapeHtml(agent.officePhone || '0432335949')}">📞 ${escapeHtml(agent.officePhone || '043-233-5949')}</a>
+    </div>
+  `;
+  document.getElementById('listingModalOverlay').classList.add('open');
+}
+
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('[data-listing-idx]');
+  if(card){
+    const idx = Number(card.getAttribute('data-listing-idx'));
+    if(liveListings[idx]) renderListingModal(liveListings[idx]);
+  }
+  if(e.target.id === 'listingModalClose' || e.target.id === 'listingModalOverlay'){
+    document.getElementById('listingModalOverlay').classList.remove('open');
+  }
+});
+
 loadFaqAnswers();
 loadPosts();
 loadBlogPosts();
+loadListings();
 </script>
 </body>
 </html>
