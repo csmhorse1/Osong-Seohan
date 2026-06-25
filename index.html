@@ -1368,11 +1368,18 @@ function renderListingModal(l){
       <div style="font-size:13px;margin-top:4px;opacity:0.85;">연락처 노출: ${escapeHtml(contact.visibility||'-')}</div>
       <a href="tel:${escapeHtml(agent.officePhone || '0432335949')}">📞 ${escapeHtml(agent.officePhone || '043-233-5949')}</a>
     </div>
+
+    ${isAdmin ? `
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <a class="btn btn-outline btn-sm" href="listing-register.html?edit=${escapeHtml(l.id)}" style="flex:1;justify-content:center;">✏️ 매물 수정</a>
+      <button type="button" id="deleteListingBtn" data-listing-id="${escapeHtml(l.id)}" class="btn btn-outline btn-sm" style="flex:1;justify-content:center;color:#E5483D;border-color:#E5483D;">🗑 매물 삭제</button>
+    </div>
+    ` : ''}
   `;
   document.getElementById('listingModalOverlay').classList.add('open');
 }
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
   const card = e.target.closest('[data-listing-idx]');
   if(card){
     const idx = Number(card.getAttribute('data-listing-idx'));
@@ -1380,6 +1387,21 @@ document.addEventListener('click', (e) => {
   }
   if(e.target.id === 'listingModalClose' || e.target.id === 'listingModalOverlay'){
     document.getElementById('listingModalOverlay').classList.remove('open');
+  }
+  const delBtn = e.target.closest('#deleteListingBtn');
+  if(delBtn){
+    const id = delBtn.getAttribute('data-listing-id');
+    if(confirm('이 매물을 삭제할까요? 삭제하면 복구할 수 없습니다.')){
+      try{
+        await db.collection('listings').doc(id).delete();
+        showToast('매물이 삭제되었습니다.');
+        document.getElementById('listingModalOverlay').classList.remove('open');
+        loadListings();
+      }catch(err){
+        console.error(err);
+        showToast('삭제 중 오류가 발생했어요.');
+      }
+    }
   }
 });
 

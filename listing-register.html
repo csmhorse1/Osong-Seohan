@@ -642,7 +642,7 @@
 <!-- Firebase (Firestore) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ▼▼▼ 1) 기존 게시판/FAQ에서 쓰고 있는 firebaseConfig를 그대로 붙여넣어주세요 ▼▼▼
   const firebaseConfig = {
@@ -677,6 +677,15 @@
     }
   } catch (e) {
     console.error("Firebase 초기화 오류:", e);
+  }
+
+  // ---------- 수정 모드 감지 (URL: listing-register.html?edit=문서ID) ----------
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  if (editId) {
+    document.querySelector('h1').textContent = '매물 수정';
+    document.title = '매물 수정 | 오송 미소공인중개사사무소';
+    document.getElementById('submitBtn').textContent = '수정 저장하기';
   }
 
   // ---------- 토글(세그먼트) 버튼 처리 ----------
@@ -723,6 +732,18 @@
   const uploadingBadge = document.getElementById('uploadingBadge');
   let uploadedPhotoUrls = [];
 
+  function addPhotoSlot(url) {
+    const slot = document.createElement('div');
+    slot.className = 'photo-slot';
+    slot.innerHTML = `<img src="${url}"><button type="button" class="rm">×</button>`;
+    photoGrid.insertBefore(slot, photoAddBtn);
+    slot.querySelector('.rm').addEventListener('click', () => {
+      uploadedPhotoUrls = uploadedPhotoUrls.filter(u => u !== url);
+      slot.remove();
+    });
+    return slot;
+  }
+
   photoAddBtn.addEventListener('click', () => photoInput.click());
 
   photoInput.addEventListener('change', async (e) => {
@@ -741,15 +762,13 @@
         continue;
       }
       const localUrl = URL.createObjectURL(file);
-      const slot = document.createElement('div');
-      slot.className = 'photo-slot';
-      slot.innerHTML = `<img src="${localUrl}"><button type="button" class="rm">×</button>`;
-      photoGrid.insertBefore(slot, photoAddBtn);
+      const slot = addPhotoSlot(localUrl);
 
       let finalUrl = localUrl;
       if (isConfigured) {
         try {
           finalUrl = await uploadToCloudinary(file);
+          slot.querySelector('img').src = finalUrl;
         } catch (err) {
           console.error(err);
           alert(`${file.name} 업로드 실패`);
@@ -778,6 +797,107 @@
     if (!res.ok) throw new Error('Cloudinary upload failed');
     const data = await res.json();
     return data.secure_url;
+  }
+
+  // ---------- 수정 모드: 기존 매물 데이터 불러와서 폼에 채우기 ----------
+  function setVal(name, value) {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (el && value !== undefined && value !== null && value !== '') el.value = value;
+  }
+  function setSeg(name, value) {
+    if (!value) return;
+    const seg = document.querySelector(`.seg[data-name="${name}"]`);
+    if (!seg) return;
+    const btn = Array.from(seg.querySelectorAll('button')).find(b => b.dataset.value === value);
+    if (btn) {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      segValues[name] = value;
+    }
+  }
+
+  async function loadListingForEdit(id) {
+    try {
+      const snap = await getDoc(doc(db, "listings", id));
+      if (!snap.exists()) { alert('해당 매물을 찾을 수 없습니다.'); return; }
+      const l = snap.data();
+
+      setVal('propertyType', l.propertyType);
+      setVal('addrProvince', l.address && l.address.province);
+      setVal('addrCity', l.address && l.address.city);
+      setVal('addrDong', l.address && l.address.dong);
+      setVal('addrDongNo', l.address && l.address.dongNo);
+      setVal('addrHoNo', l.address && l.address.hoNo);
+      setVal('complexName', l.complexName);
+      setVal('buildingUse', l.buildingUse);
+      setVal('areaSupply', l.area && l.area.supply);
+      setVal('areaExclusive', l.area && l.area.exclusive);
+      setVal('floorCurrent', l.floor && l.floor.current);
+      setVal('floorTotal', l.floor && l.floor.total);
+      setVal('direction', l.direction);
+      setVal('entranceType', l.entranceType);
+      setVal('roomCount', l.roomCount);
+      setVal('bathCount', l.bathCount);
+      setSeg('innerStructure', l.innerStructure);
+
+      const fee = l.maintenanceFee || {};
+      setSeg('feeDetailType', fee.detailType);
+      setSeg('feeBasis', fee.basis);
+      setVal('feeTotalAmount', fee.amount);
+      setVal('feeReasonEtc', fee.reasonEtc);
+      if (fee.reason) {
+        const radio = document.querySelector(`input[name="feeReason"][value="${fee.reason}"]`);
+        if (radio) {
+          radio.checked = true;
+          if (radio.id === 'feeReasonEtcRadio') document.getElementById('feeReasonEtcInput').style.display = 'block';
+        }
+      }
+      (fee.includedItems || []).forEach(item => {
+        const cb = document.querySelector(`#feeIncludedItems input[value="${item}"]`);
+        if (cb) cb.checked = true;
+      });
+
+      setVal('buildDate', l.buildDate);
+      setVal('parkingPerHousehold', l.parking && l.parking.perHousehold);
+      setVal('parkingTotal', l.parking && l.parking.total);
+
+      setSeg('dealType', l.dealType);
+      setVal('priceMain', l.priceMain);
+      setVal('priceMonthly', l.priceMonthly);
+      if (l.dealType === '월세' || l.dealType === '단기') {
+        document.getElementById('rentFeeField').style.display = 'block';
+      }
+      setVal('loanAmount', l.loanAmount);
+      setSeg('moveInType', l.moveIn && l.moveIn.type);
+      setVal('moveInDate', l.moveIn && l.moveIn.date);
+      setVal('featureSummary', l.featureSummary);
+      setVal('description', l.description);
+      setVal('agentMemo', l.agentMemo);
+
+      (l.photos || []).forEach(url => {
+        addPhotoSlot(url);
+        uploadedPhotoUrls.push(url);
+      });
+
+      if (l.contact && l.contact.mobile) {
+        const parts = l.contact.mobile.split('-');
+        setVal('mobile1', parts[0]);
+        setVal('mobile2', parts[1]);
+        setVal('mobile3', parts[2]);
+      }
+      setSeg('contactVisibility', l.contact && l.contact.visibility);
+    } catch (err) {
+      console.error(err);
+      alert('매물 정보를 불러오는 중 오류가 발생했습니다.');
+    }
+  }
+
+  if (editId) {
+    if (isConfigured) {
+      loadListingForEdit(editId);
+    } else {
+      alert('Firebase 설정이 필요합니다. 설정을 먼저 완료해주세요.');
+    }
   }
 
   // ---------- 토스트 ----------
@@ -848,8 +968,11 @@
         officePhone: "043-233-5949"
       },
       status: "공개",
-      createdAt: isConfigured ? serverTimestamp() : new Date().toISOString()
+      updatedAt: isConfigured ? serverTimestamp() : new Date().toISOString()
     };
+    if (!editId) {
+      listing.createdAt = isConfigured ? serverTimestamp() : new Date().toISOString();
+    }
 
     if (!isConfigured) {
       console.log('미리보기(설정 미완료) - 저장될 데이터:', listing);
@@ -859,22 +982,28 @@
 
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = '등록 중...';
+    submitBtn.textContent = editId ? '저장 중...' : '등록 중...';
     try {
-      await addDoc(collection(db, "listings"), listing);
-      showToast('매물이 등록되었습니다 ✓');
-      form.reset();
-      uploadedPhotoUrls = [];
-      photoGrid.querySelectorAll('.photo-slot').forEach(el => el.remove());
-      document.querySelectorAll('.seg button.active').forEach(b => b.classList.remove('active'));
-      Object.keys(segValues).forEach(k => segValues[k] = '');
-      document.getElementById('rentFeeField').style.display = 'none';
+      if (editId) {
+        await updateDoc(doc(db, "listings", editId), listing);
+        showToast('매물이 수정되었습니다 ✓');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+      } else {
+        await addDoc(collection(db, "listings"), listing);
+        showToast('매물이 등록되었습니다 ✓');
+        form.reset();
+        uploadedPhotoUrls = [];
+        photoGrid.querySelectorAll('.photo-slot').forEach(el => el.remove());
+        document.querySelectorAll('.seg button.active').forEach(b => b.classList.remove('active'));
+        Object.keys(segValues).forEach(k => segValues[k] = '');
+        document.getElementById('rentFeeField').style.display = 'none';
+      }
     } catch (err) {
       console.error(err);
-      alert('등록 중 오류가 발생했습니다: ' + err.message);
+      alert('저장 중 오류가 발생했습니다: ' + err.message);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = '등록하기';
+      submitBtn.textContent = editId ? '수정 저장하기' : '등록하기';
     }
   });
 </script>
