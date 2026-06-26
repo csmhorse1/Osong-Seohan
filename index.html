@@ -296,9 +296,26 @@ body.admin-mode .faq-add-btn{display:block;}
 .review-card .who{margin-top:14px;font-weight:700;font-size:13.5px;color:var(--ink);}
 .review-card .review-admin-row{display:none;gap:6px;position:absolute;top:14px;right:14px;}
 #reviewScroller.admin-mode .review-admin-row{display:flex;}
-.review-edit-btn,.review-del-btn{font-size:11px;font-weight:700;padding:4px 9px;border-radius:12px;}
+.review-edit-btn,.review-del-btn,.review-reply-btn,.review-reply-del-btn{font-size:11px;font-weight:700;padding:4px 9px;border-radius:12px;}
 .review-edit-btn{color:var(--rose-deep);background:var(--rose-pale);}
 .review-del-btn{color:#b3261e;background:#fbe9e7;}
+.review-reply{margin-top:14px;padding:12px 14px;background:var(--cream-deep);border-radius:var(--radius-sm);border-left:3px solid var(--rose-deep);}
+.review-reply .reply-label{font-size:12px;font-weight:800;color:var(--rose-deep);margin-bottom:4px;display:block;}
+.review-reply p{font-size:13.3px;color:var(--ink);white-space:pre-wrap;margin:0;}
+.review-reply-row{display:none;gap:8px;margin-top:12px;flex-wrap:wrap;}
+#reviewScroller.admin-mode .review-reply-row{display:flex;}
+.review-reply-btn{color:var(--ink);background:var(--cream-deep);}
+.review-reply-del-btn{color:#b3261e;background:#fbe9e7;}
+.review-edit-form,.review-reply-form{display:none;margin-top:14px;}
+.review-edit-form.open,.review-reply-form.open{display:block;}
+#reviewAddForm.open{display:block;}
+.review-edit-form label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin:10px 0 4px;}
+.review-edit-form label:first-of-type{margin-top:0;}
+.review-edit-form input[type="text"],.review-edit-form select,.review-edit-form textarea,.review-reply-form textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-family:inherit;font-size:13.8px;background:var(--white);}
+.review-edit-form textarea,.review-reply-form textarea{min-height:80px;}
+.emoji-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.emoji-btn{font-size:17px;line-height:1;padding:5px 8px;border-radius:10px;background:var(--cream-deep);border:1px solid var(--line);cursor:pointer;}
+.emoji-btn:hover{background:var(--rose-pale);}
 
 .contact-grid{display:grid;gap:16px;}
 @media (min-width:700px){.contact-grid{grid-template-columns:1.1fr 1fr;}}
@@ -770,6 +787,25 @@ footer .f-links a:hover{color:var(--rose-deep);}
   </div>
   <div class="wrap">
     <button type="button" id="reviewAddBtn" class="faq-add-btn">＋ 후기 추가하기</button>
+    <div class="review-edit-form" id="reviewAddForm" data-emoji-scope="reviewAddText">
+      <label>작성자 표시</label>
+      <input type="text" id="reviewAddWho" placeholder="예: 김○○님 · 전세 거래">
+      <label>별점</label>
+      <select id="reviewAddStars">
+        <option value="5">★★★★★ (5점)</option>
+        <option value="4">★★★★☆ (4점)</option>
+        <option value="3">★★★☆☆ (3점)</option>
+        <option value="2">★★☆☆☆ (2점)</option>
+        <option value="1">★☆☆☆☆ (1점)</option>
+      </select>
+      <label>후기 내용</label>
+      <textarea id="reviewAddText" placeholder="네이버 플레이스 방문자 리뷰를 그대로 옮겨 적어주세요"></textarea>
+      <div class="emoji-row" data-emoji-for="reviewAddText"></div>
+      <div class="faq-edit-arow">
+        <button type="button" class="btn btn-outline btn-sm" id="reviewAddCancel">취소</button>
+        <button type="button" class="btn btn-rose btn-sm" id="reviewAddSave">저장</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1223,12 +1259,14 @@ document.getElementById('faqList').addEventListener('click', async (e)=>{
 });
 
 
-/* ===================== 고객 후기 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제) ===================== */
+/* ===================== 고객 후기 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제 + 답글) ===================== */
 const DEFAULT_REVIEWS = [
-  { id:'rev1', stars:5, text:'오송서한이다음 단지 입주민인데, 단지 안에 있는 부동산이라 그런지 단지 사정을 정말 잘 알고 계셨어요. 덕분에 빠르게 전세 계약 마무리했습니다.', who:'김○○님 · 서한이다음 전세 거래' },
-  { id:'rev2', stars:5, text:'처음 오송에 이사 와서 아무것도 몰랐는데, 단지별 장단점을 솔직하게 설명해 주셔서 믿고 계약했습니다.', who:'이○○님 · 오송 매매 거래' },
-  { id:'rev3', stars:5, text:'상가 자리 보러 오송 처음 와봤는데, 유동인구나 향후 개발 계획까지 자세히 알려주셔서 결정이 훨씬 쉬워졌습니다.', who:'박○○님 · 오송역 상가 임대' },
+  { id:'rev1', stars:5, text:'오송서한이다음 단지 입주민인데, 단지 안에 있는 부동산이라 그런지 단지 사정을 정말 잘 알고 계셨어요. 덕분에 빠르게 전세 계약 마무리했습니다.', who:'김○○님 · 서한이다음 전세 거래', reply:'' },
+  { id:'rev2', stars:5, text:'처음 오송에 이사 와서 아무것도 몰랐는데, 단지별 장단점을 솔직하게 설명해 주셔서 믿고 계약했습니다.', who:'이○○님 · 오송 매매 거래', reply:'' },
+  { id:'rev3', stars:5, text:'상가 자리 보러 오송 처음 와봤는데, 유동인구나 향후 개발 계획까지 자세히 알려주셔서 결정이 훨씬 쉬워졌습니다.', who:'박○○님 · 오송역 상가 임대', reply:'' },
 ];
+
+const EMOJI_LIST = ['😊','👍','🏠','✨','❤️','🙏','⭐','💬','🎉','😀'];
 
 let reviewItems = [];
 const reviewDocRef = db.collection('site').doc('reviews-data');
@@ -1238,23 +1276,86 @@ function starsText(n){
   return '★'.repeat(count) + '☆'.repeat(5 - count);
 }
 
+function starsOptionsHtml(selected){
+  const sel = parseInt(selected, 10) || 5;
+  return [5,4,3,2,1].map(n => `<option value="${n}" ${n===sel?'selected':''}>${starsText(n)} (${n}점)</option>`).join('');
+}
+
+function emojiRowHtml(targetId){
+  return EMOJI_LIST.map(em => `<button type="button" class="emoji-btn" data-emoji-for="${targetId}">${em}</button>`).join('');
+}
+
+/* 이모지 버튼 클릭 시 해당 textarea의 커서 위치에 이모지 삽입 (후기 작성/수정, 답글 작성/수정 폼 공통) */
+document.addEventListener('click', (e)=>{
+  if(!e.target.classList.contains('emoji-btn')) return;
+  const targetId = e.target.getAttribute('data-emoji-for');
+  const ta = document.getElementById(targetId);
+  if(!ta) return;
+  const emoji = e.target.textContent;
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? ta.value.length;
+  ta.value = ta.value.slice(0, start) + emoji + ta.value.slice(end);
+  const newPos = start + emoji.length;
+  ta.focus();
+  ta.setSelectionRange(newPos, newPos);
+});
+
 function renderReviewList(){
   const scroller = document.getElementById('reviewScroller');
   if(!reviewItems.length){
     scroller.innerHTML = '<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">등록된 후기가 없어요.</p>';
     return;
   }
-  scroller.innerHTML = reviewItems.map(item => `
-    <article class="review-card" data-review-id="${escapeHtml(item.id)}">
+  scroller.innerHTML = reviewItems.map(item => {
+    const id = escapeHtml(item.id);
+    const hasReply = item.reply && item.reply.trim();
+    return `
+    <article class="review-card" data-review-id="${id}">
       <div class="review-admin-row">
-        <button type="button" class="review-edit-btn" data-review-edit="${escapeHtml(item.id)}">✏️</button>
-        <button type="button" class="review-del-btn" data-review-del="${escapeHtml(item.id)}">🗑</button>
+        <button type="button" class="review-edit-btn" data-review-edit="${id}">✏️</button>
+        <button type="button" class="review-del-btn" data-review-del="${id}">🗑</button>
       </div>
       <div class="stars">${starsText(item.stars)}</div>
       <p>${escapeHtml(item.text)}</p>
       <div class="who">${escapeHtml(item.who)}</div>
+
+      ${hasReply ? `
+      <div class="review-reply">
+        <span class="reply-label">🏠 사장님 답글</span>
+        <p>${escapeHtml(item.reply)}</p>
+      </div>` : ''}
+
+      <div class="review-reply-row">
+        <button type="button" class="review-reply-btn" data-review-reply-edit="${id}">${hasReply ? '💬 답글 수정' : '💬 답글 작성'}</button>
+        ${hasReply ? `<button type="button" class="review-reply-del-btn" data-review-reply-del="${id}">답글 삭제</button>` : ''}
+      </div>
+
+      <div class="review-edit-form" data-review-form="${id}">
+        <label>작성자 표시</label>
+        <input type="text" data-review-who-input="${id}" value="${escapeHtml(item.who)}">
+        <label>별점</label>
+        <select data-review-stars-input="${id}">${starsOptionsHtml(item.stars)}</select>
+        <label>후기 내용</label>
+        <textarea id="review-text-${id}" data-review-text-input="${id}">${escapeHtml(item.text)}</textarea>
+        <div class="emoji-row">${emojiRowHtml(`review-text-${id}`)}</div>
+        <div class="faq-edit-arow">
+          <button type="button" class="btn btn-outline btn-sm" data-review-cancel="${id}">취소</button>
+          <button type="button" class="btn btn-rose btn-sm" data-review-save="${id}">저장</button>
+        </div>
+      </div>
+
+      <div class="review-reply-form" data-review-reply-form="${id}">
+        <label>사장님 답글</label>
+        <textarea id="review-reply-${id}" data-review-reply-input="${id}">${escapeHtml(item.reply || '')}</textarea>
+        <div class="emoji-row">${emojiRowHtml(`review-reply-${id}`)}</div>
+        <div class="faq-edit-arow">
+          <button type="button" class="btn btn-outline btn-sm" data-review-reply-cancel="${id}">취소</button>
+          <button type="button" class="btn btn-rose btn-sm" data-review-reply-save="${id}">저장</button>
+        </div>
+      </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function loadReviews(){
@@ -1283,42 +1384,66 @@ async function saveReviewItems(){
   }
 }
 
-document.getElementById('reviewAddBtn').addEventListener('click', async ()=>{
-  const text = prompt('후기 내용을 입력해 주세요. (네이버 플레이스 방문자 리뷰를 그대로 옮겨 적으면 돼요)');
-  if(!text || !text.trim()) return;
-  const who = prompt('작성자 표시를 입력해 주세요. (예: 김○○님 · 전세 거래)', '익명 고객님');
-  if(who === null) return;
-  let stars = prompt('별점을 입력해 주세요. (1~5, 숫자만)', '5');
-  if(stars === null) return;
-  stars = parseInt(stars, 10);
-  if(isNaN(stars) || stars < 1 || stars > 5) stars = 5;
+/* ---- 새 후기 추가 ---- */
+const reviewAddFormEl = document.getElementById('reviewAddForm');
+document.getElementById('reviewAddBtn').addEventListener('click', ()=>{
+  reviewAddFormEl.classList.add('open');
+  document.getElementById('reviewAddBtn').style.display = 'none';
+  reviewAddFormEl.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+document.getElementById('reviewAddCancel').addEventListener('click', ()=>{
+  reviewAddFormEl.classList.remove('open');
+  document.getElementById('reviewAddBtn').style.display = '';
+  document.getElementById('reviewAddWho').value = '';
+  document.getElementById('reviewAddText').value = '';
+});
+
+document.getElementById('reviewAddSave').addEventListener('click', async ()=>{
+  const text = document.getElementById('reviewAddText').value.trim();
+  if(!text){ showToast('후기 내용을 입력해 주세요.'); return; }
+  const who = document.getElementById('reviewAddWho').value.trim() || '익명 고객님';
+  const stars = parseInt(document.getElementById('reviewAddStars').value, 10) || 5;
   const newId = 'rev_' + Date.now();
-  reviewItems.push({ id:newId, stars, text:text.trim(), who: who.trim() || '익명 고객님' });
+  reviewItems.push({ id:newId, stars, text, who, reply:'' });
   const ok = await saveReviewItems();
   if(ok){
     renderReviewList();
+    reviewAddFormEl.classList.remove('open');
+    document.getElementById('reviewAddBtn').style.display = '';
+    document.getElementById('reviewAddWho').value = '';
+    document.getElementById('reviewAddText').value = '';
     showToast('후기가 추가되었습니다.');
   }
 });
 
+/* ---- 후기 카드 내 수정/삭제/답글 (이벤트 위임) ---- */
 document.getElementById('reviewScroller').addEventListener('click', async (e)=>{
   const t = e.target;
 
   const editId = t.getAttribute('data-review-edit');
   if(editId){
-    const target = reviewItems.find(item => item.id === editId);
+    document.querySelector(`[data-review-form="${editId}"]`).classList.add('open');
+    return;
+  }
+
+  const cancelId = t.getAttribute('data-review-cancel');
+  if(cancelId){
+    document.querySelector(`[data-review-form="${cancelId}"]`).classList.remove('open');
+    return;
+  }
+
+  const saveId = t.getAttribute('data-review-save');
+  if(saveId){
+    const target = reviewItems.find(item => item.id === saveId);
     if(!target) return;
-    const text = prompt('후기 내용을 수정해 주세요.', target.text);
-    if(text === null) return;
-    const who = prompt('작성자 표시를 수정해 주세요.', target.who);
-    if(who === null) return;
-    let stars = prompt('별점을 수정해 주세요. (1~5)', String(target.stars));
-    if(stars === null) return;
-    stars = parseInt(stars, 10);
-    if(isNaN(stars) || stars < 1 || stars > 5) stars = target.stars;
-    target.text = text.trim() || target.text;
-    target.who = who.trim() || target.who;
+    const who = document.querySelector(`[data-review-who-input="${saveId}"]`).value.trim();
+    const stars = parseInt(document.querySelector(`[data-review-stars-input="${saveId}"]`).value, 10) || target.stars;
+    const text = document.querySelector(`[data-review-text-input="${saveId}"]`).value.trim();
+    if(!text){ showToast('후기 내용을 입력해 주세요.'); return; }
+    target.who = who || target.who;
     target.stars = stars;
+    target.text = text;
     const ok = await saveReviewItems();
     if(ok){
       renderReviewList();
@@ -1338,7 +1463,48 @@ document.getElementById('reviewScroller').addEventListener('click', async (e)=>{
     }
     return;
   }
+
+  const replyEditId = t.getAttribute('data-review-reply-edit');
+  if(replyEditId){
+    document.querySelector(`[data-review-reply-form="${replyEditId}"]`).classList.add('open');
+    return;
+  }
+
+  const replyCancelId = t.getAttribute('data-review-reply-cancel');
+  if(replyCancelId){
+    document.querySelector(`[data-review-reply-form="${replyCancelId}"]`).classList.remove('open');
+    return;
+  }
+
+  const replySaveId = t.getAttribute('data-review-reply-save');
+  if(replySaveId){
+    const target = reviewItems.find(item => item.id === replySaveId);
+    if(!target) return;
+    const replyText = document.querySelector(`[data-review-reply-input="${replySaveId}"]`).value.trim();
+    if(!replyText){ showToast('답글 내용을 입력해 주세요.'); return; }
+    target.reply = replyText;
+    const ok = await saveReviewItems();
+    if(ok){
+      renderReviewList();
+      showToast('답글이 등록되었습니다.');
+    }
+    return;
+  }
+
+  const replyDelId = t.getAttribute('data-review-reply-del');
+  if(replyDelId){
+    if(!confirm('등록된 답글을 삭제할까요?')) return;
+    const target = reviewItems.find(item => item.id === replyDelId);
+    if(target) target.reply = '';
+    const ok = await saveReviewItems();
+    if(ok){
+      renderReviewList();
+      showToast('답글이 삭제되었습니다.');
+    }
+    return;
+  }
 });
+
 
 /* ===================== 네이버 블로그 최신글 자동 표시 ===================== */
 async function loadBlogPosts(){
