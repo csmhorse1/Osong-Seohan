@@ -1152,17 +1152,44 @@ function renderFaqList(){
 }
 
 async function loadFaqAnswers(){
+  let needsSave = false;
   try{
     const doc = await faqDocRef.get();
     if(doc.exists && Array.isArray(doc.data().items) && doc.data().items.length){
       faqItems = doc.data().items;
     } else {
       faqItems = DEFAULT_FAQS.slice();
+      needsSave = true;
     }
   }catch(e){
     console.error(e);
     faqItems = DEFAULT_FAQS.slice();
   }
+
+  /* 구버전(faq-answers 문서)에 사장님이 직접 작성해둔 답변이 남아있으면 자동으로 가져와 합칩니다.
+     (현재 답변이 기본 안내문구 그대로인 항목만 덮어써서, 새로 작성한 답변은 보호합니다) */
+  try{
+    const legacyDoc = await db.collection('site').doc('faq-answers').get();
+    if(legacyDoc.exists){
+      const legacyAnswers = legacyDoc.data();
+      faqItems = faqItems.map(item => {
+        const defaultItem = DEFAULT_FAQS.find(d => d.id === item.id);
+        const isPlaceholder = !item.a || (defaultItem && item.a === defaultItem.a);
+        if(legacyAnswers[item.id] && isPlaceholder && legacyAnswers[item.id] !== item.a){
+          needsSave = true;
+          return { ...item, a: legacyAnswers[item.id] };
+        }
+        return item;
+      });
+    }
+  }catch(legacyErr){
+    console.error(legacyErr);
+  }
+
+  if(needsSave){
+    try{ await faqDocRef.set({ items: faqItems }); }catch(e){ console.error(e); }
+  }
+
   renderFaqList();
 }
 
