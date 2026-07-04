@@ -1,4 +1,4 @@
-// 네이버 블로그 RSS를 읽어서 최신 글 3개를 blog-posts.json으로 저장하는 스크립트
+// 네이버 블로그 RSS를 읽어서 최신 글 10개를 blog-posts.json으로 저장하는 스크립트
 // GitHub Actions가 매일 자동으로 이 스크립트를 실행합니다.
 
 const fs = require('fs');
@@ -6,7 +6,7 @@ const path = require('path');
 
 const RSS_URL = 'https://rss.blog.naver.com/coldwoman77.xml';
 const OUTPUT_PATH = path.join(__dirname, '..', 'blog-posts.json');
-const POST_COUNT = 3;
+const POST_COUNT = 10;
 
 function stripCdata(str) {
   if (!str) return '';
