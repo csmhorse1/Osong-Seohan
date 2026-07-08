@@ -203,7 +203,8 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,246,238,0.94);b
 .blog-grid{display:grid;gap:18px;grid-template-columns:1fr;}
 @media (min-width:760px){.blog-grid{grid-template-columns:repeat(3,1fr);}}
 .blog-card{background:var(--white);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;}
-.blog-card .b-thumb{height:170px;background:linear-gradient(135deg,var(--rose-pale),var(--gold-pale));display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--rose-deep);}
+.blog-card .b-thumb{height:170px;background:linear-gradient(135deg,var(--rose-pale),var(--gold-pale));display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--rose-deep);overflow:hidden;}
+.blog-card .b-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .blog-card .b-body{padding:18px 20px 22px;display:flex;flex-direction:column;flex:1;}
 .blog-card h4{font-size:16px;font-weight:700;line-height:1.4;margin-bottom:8px;}
 .blog-card .b-date{font-size:12px;color:var(--rose-deep);font-weight:700;margin-bottom:8px;}
@@ -1554,7 +1555,11 @@ async function loadBlogPosts(){
 
     grid.innerHTML = data.posts.map(p => `
       <article class="blog-card">
-        <div class="b-thumb">📝</div>
+        <div class="b-thumb">${
+          p.thumbnail
+            ? `<img src="${escapeHtml(p.thumbnail)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='📝';">`
+            : '📝'
+        }</div>
         <div class="b-body">
           <h4>${escapeHtml(p.title)}</h4>
           ${p.date ? `<div class="b-date">${escapeHtml(p.date)}</div>` : ''}

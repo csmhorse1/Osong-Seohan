@@ -1,4 +1,4 @@
-// 네이버 블로그 RSS를 읽어서 최신 글 10개를 blog-posts.json으로 저장하는 스크립트
+// 네이버 블로그 RSS를 읽어서 최신 글 12개(썸네일 포함)를 blog-posts.json으로 저장하는 스크립트
 // GitHub Actions가 매일 자동으로 이 스크립트를 실행합니다.
 
 const fs = require('fs');
@@ -6,7 +6,7 @@ const path = require('path');
 
 const RSS_URL = 'https://rss.blog.naver.com/coldwoman77.xml';
 const OUTPUT_PATH = path.join(__dirname, '..', 'blog-posts.json');
-const POST_COUNT = 10;
+const POST_COUNT = 12;
 
 function stripCdata(str) {
   if (!str) return '';
@@ -31,6 +31,13 @@ function extractTag(block, tag) {
   const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
   const m = block.match(re);
   return m ? m[1].trim() : '';
+}
+
+function extractThumbnail(html) {
+  if (!html) return '';
+  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (!m) return '';
+  return m[1].replace(/&amp;/g, '&');
 }
 
 function formatDate(pubDate) {
@@ -66,14 +73,17 @@ async function main() {
 
     const title = stripHtml(stripCdata(titleRaw));
     const link = stripHtml(stripCdata(linkRaw));
-    const descText = stripHtml(stripCdata(descRaw));
+    const descRawClean = stripCdata(descRaw);
+    const descText = stripHtml(descRawClean);
     const excerpt = descText.length > 80 ? descText.slice(0, 80) + '…' : descText;
+    const thumbnail = extractThumbnail(descRawClean);
 
     return {
       title: title || '제목 없음',
       link: link || 'https://blog.naver.com/coldwoman77',
       excerpt: excerpt || '',
-      date: formatDate(pubDate)
+      date: formatDate(pubDate),
+      thumbnail: thumbnail || ''
     };
   });
 
