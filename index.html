@@ -230,7 +230,20 @@ table.compare-table tr.me-row td{background:var(--rose-pale);color:var(--ink);fo
 table.compare-table tr.me-row td:first-child{position:relative;padding-left:26px;}
 table.compare-table tr.me-row td:first-child::before{content:'📍';position:absolute;left:8px;}
 .compare-note{font-size:12px;color:var(--ink-soft);margin-top:8px;}
-.info-card{background:var(--white);border-radius:var(--radius-lg);padding:26px 22px;border:1px solid var(--line);}
+
+/* ---- 지역정보(오송 알아보기) 사장님 모드 편집 UI ---- */
+.card-admin-row{display:none;gap:6px;position:absolute;top:14px;right:14px;}
+body.admin-mode .card-admin-row{display:flex;}
+.area-btn-row{display:none;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center;}
+body.admin-mode .area-btn-row{display:flex;}
+.admin-col{display:none;}
+body.admin-mode .admin-col{display:table-cell;}
+[contenteditable="true"]{outline:1.5px dashed var(--gold);outline-offset:3px;border-radius:4px;cursor:text;}
+[contenteditable="true"]:focus{background:var(--rose-pale);outline-style:solid;}
+.faq-edit-form label.area-check-label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);margin:10px 0 4px;}
+.area-hint{font-size:11.5px;color:var(--ink-soft);margin-left:auto;}
+.news-card{position:relative;}
+.info-card{background:var(--white);border-radius:var(--radius-lg);padding:26px 22px;border:1px solid var(--line);position:relative;}
 .info-card.highlight{background:var(--rose-deep);border-color:var(--rose-deep);}
 .info-card.highlight h4{color:var(--cream);}
 .info-card.highlight p{color:rgba(251,246,238,0.82);}
@@ -696,87 +709,20 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <h2>왜 지금, 오송서한이다음일까요</h2>
       <p class="section-sub">매물을 보기 전에 오송의 입지를 먼저 안내드립니다.</p>
     </div>
-    <div class="info-grid">
-      <div class="info-card highlight">
-        <div class="ic">🏢</div>
-        <h4>오송서한이다음노블리스</h4>
-        <p>[X]년 준공, 총 [X]세대 규모의 단지로, 사무소가 단지 내 상가 1동 102호에 직접 입점해 있어 시세와 매물 정보를 가장 빠르게 안내받을 수 있습니다. 입주민이라면 도보로 바로 상담 가능합니다.</p>
-      </div>
-      <div class="info-card">
-        <div class="ic">🚄</div>
-        <h4>KTX 오송역</h4>
-        <p>KTX 오송역은 경부선과 호남선이 만나는 국내 유일의 분기역으로, 서울역까지 KTX 약 [X]분, 세종시청까지 약 [X]분이 소요됩니다(한국철도공사 시간표 기준). 출퇴근·주말 이동 모두 편리합니다.</p>
-      </div>
-      <div class="info-card">
-        <div class="ic">🧬</div>
-        <h4>오송 바이오밸리</h4>
-        <p>오송서한이다음노블리스에서 오송2산업단지까지 직선거리 1.46km, 도보 약 20분·자전거 약 6분·차량 약 4분 거리로, 첨단의료복합단지와 제약·바이오 기업이 밀집한 국가산업단지 접근성이 우수해 안정적인 배후 수요가 꾸준합니다. (관련 기사: 아래 뉴스 참고)</p>
-      </div>
+    <div class="info-grid" id="infoGrid">
+      <p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">카드를 불러오는 중...</p>
     </div>
+    <button type="button" id="areaCardAddBtn" class="faq-add-btn">＋ 카드 추가하기</button>
 
-    <div class="compare-wrap">
-      <h3>오송 1산단 접근성 비교 <span class="tag">주요 단지 5곳</span></h3>
-      <div class="compare-scroll">
-        <table class="compare-table">
-          <thead>
-            <tr><th>단지명</th><th>직선거리</th><th>도보</th><th>자전거</th><th>차량</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>대원칸타빌</td><td>0.72km</td><td>10분</td><td>3분</td><td>2분</td></tr>
-            <tr><td>호반베르디움</td><td>0.82km</td><td>11분</td><td>3분</td><td>2분</td></tr>
-            <tr><td>경남아너스빌</td><td>0.97km</td><td>14분</td><td>4분</td><td>3분</td></tr>
-            <tr><td>롯데캐슬</td><td>1.00km</td><td>14분</td><td>4분</td><td>3분</td></tr>
-            <tr><td>모아미래도</td><td>1.11km</td><td>16분</td><td>4분</td><td>3분</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>오송 2산단 접근성 비교 <span class="tag">주요 단지 7곳</span></h3>
-      <div class="compare-scroll">
-        <table class="compare-table">
-          <thead>
-            <tr><th>단지명</th><th>직선거리</th><th>도보</th><th>자전거</th><th>차량</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>대광로제비앙1차</td><td>0.75km</td><td>10분</td><td>3분</td><td>2분</td></tr>
-            <tr><td>파라곤센트럴시티1차</td><td>1.20km</td><td>17분</td><td>5분</td><td>3분</td></tr>
-            <tr><td>대광로제비앙2차(그랜드센텀)</td><td>1.10km</td><td>15분</td><td>4분</td><td>3분</td></tr>
-            <tr><td>파라곤센트럴시티3차</td><td>1.24km</td><td>17분</td><td>5분</td><td>4분</td></tr>
-            <tr><td>파라곤센트럴시티2차</td><td>1.44km</td><td>20분</td><td>6분</td><td>4분</td></tr>
-            <tr class="me-row"><td>오송서한이다음노블리스</td><td>1.46km</td><td>20분</td><td>6분</td><td>4분</td></tr>
-            <tr><td>동아라이크텐</td><td>1.70km</td><td>24분</td><td>7분</td><td>5분</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="compare-note">※ 직선거리 및 이동시간은 지도 서비스 기준 산출값이며, 실제 이동시간은 경로·신호 대기에 따라 달라질 수 있습니다.</p>
+    <div id="compareContainer">
+      <p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;margin-top:20px;">비교표를 불러오는 중...</p>
     </div>
+    <button type="button" id="areaTableAddBtn" class="faq-add-btn">＋ 비교표 추가하기</button>
 
-    <div class="news-grid">
-      <a class="news-card" href="https://www.ccdn.co.kr/news/articleView.html?idxno=1084170" target="_blank" rel="noopener">
-        <img src="https://cdn.ccdn.co.kr/news/photo/202606/1084170_593913_5003.jpg" alt="K-바이오 스퀘어 조감도">
-        <div class="n-body">
-          <div class="n-src">충청매일 · 2026.06.21</div>
-          <h5>세계 최대 R&D 클러스터…글로벌 패권 선점 (K-바이오 스퀘어, 오송)</h5>
-          <span class="n-link">기사 보기 →</span>
-        </div>
-      </a>
-      <a class="news-card" href="https://www.inews365.com/mobile/article.html?no=923659" target="_blank" rel="noopener">
-        <img src="https://www.inews365.com/data/photos/20260625/art_17815947401245.jpg" alt="충북 AI 바이오 영재학교 조감도">
-        <div class="n-body">
-          <div class="n-src">충북일보 · 2026.06.16</div>
-          <h5>충북 AI 영재학교 설립 올해 말 '첫삽'…오송 첨단의료복합단지 일원</h5>
-          <span class="n-link">기사 보기 →</span>
-        </div>
-      </a>
-      <a class="news-card" href="https://www.daejonilbo.com/news/articleView.html?idxno=2281590" target="_blank" rel="noopener">
-        <img src="https://cdn.daejonilbo.com/news/photo/202606/2281590_716422_5814.jpg" alt="세종 국가상징구역 전경">
-        <div class="n-body">
-          <div class="n-src">대전일보 · 2026.06.14</div>
-          <h5>대통령 주문에 세종집무실 설계 보완 검토…인접 생활권 위상 강화</h5>
-          <span class="n-link">기사 보기 →</span>
-        </div>
-      </a>
+    <div class="news-grid" id="newsGrid" style="margin-top:44px;">
+      <p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">뉴스카드를 불러오는 중...</p>
     </div>
+    <button type="button" id="areaNewsAddBtn" class="faq-add-btn">＋ 뉴스카드 추가하기</button>
   </div>
 </section>
 
@@ -1149,6 +1095,9 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'none';
     showToast('사장님 모드를 종료했어요.');
     renderPosts();
+    renderAreaCards();
+    renderAreaTables();
+    renderAreaNews();
     return;
   }
   const pw = prompt('사장님 모드 비밀번호를 입력해 주세요.');
@@ -1160,11 +1109,15 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     document.body.classList.add('admin-mode');
     if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.add('admin-mode');
     if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'inline-flex';
-    showToast('사장님 모드가 켜졌어요. FAQ·후기 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
+    showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
     renderPosts();
+    renderAreaCards();
+    renderAreaTables();
+    renderAreaNews();
   } else {
     showToast('비밀번호가 올바르지 않아요.');
   }
+
 });
 
 /* ===================== FAQ (Firestore 동적 렌더링, 사장님 모드에서 질문 추가/수정/삭제) ===================== */
@@ -1345,6 +1298,370 @@ document.getElementById('faqList').addEventListener('click', async (e)=>{
   }
 });
 
+
+/* ===================== 지역정보(오송 알아보기): 카드/비교표/뉴스카드 (Firestore 연동, 사장님 모드에서 추가/수정/삭제) ===================== */
+const DEFAULT_AREA_DATA = {
+  cards: [
+    { id:'card1', icon:'🏢', title:'오송서한이다음노블리스', desc:'[X]년 준공, 총 [X]세대 규모의 단지로, 사무소가 단지 내 상가 1동 102호에 직접 입점해 있어 시세와 매물 정보를 가장 빠르게 안내받을 수 있습니다. 입주민이라면 도보로 바로 상담 가능합니다.', highlight:true },
+    { id:'card2', icon:'🚄', title:'KTX 오송역', desc:'KTX 오송역은 경부선과 호남선이 만나는 국내 유일의 분기역으로, 서울역까지 KTX 약 [X]분, 세종시청까지 약 [X]분이 소요됩니다(한국철도공사 시간표 기준). 출퇴근·주말 이동 모두 편리합니다.', highlight:false },
+    { id:'card3', icon:'🧬', title:'오송 바이오밸리', desc:'오송서한이다음노블리스에서 오송2산업단지까지 직선거리 1.46km, 도보 약 20분·자전거 약 6분·차량 약 4분 거리로, 첨단의료복합단지와 제약·바이오 기업이 밀집한 국가산업단지 접근성이 우수해 안정적인 배후 수요가 꾸준합니다. (관련 기사: 아래 뉴스 참고)', highlight:false }
+  ],
+  tables: [
+    { id:'table1', title:'오송 1산단 접근성 비교', tag:'주요 단지 5곳', rows:[
+      { id:'r1', name:'대원칸타빌', distance:'0.72km', walk:'10분', bike:'3분', car:'2분', highlight:false },
+      { id:'r2', name:'호반베르디움', distance:'0.82km', walk:'11분', bike:'3분', car:'2분', highlight:false },
+      { id:'r3', name:'경남아너스빌', distance:'0.97km', walk:'14분', bike:'4분', car:'3분', highlight:false },
+      { id:'r4', name:'롯데캐슬', distance:'1.00km', walk:'14분', bike:'4분', car:'3분', highlight:false },
+      { id:'r5', name:'모아미래도', distance:'1.11km', walk:'16분', bike:'4분', car:'3분', highlight:false }
+    ]},
+    { id:'table2', title:'오송 2산단 접근성 비교', tag:'주요 단지 7곳', rows:[
+      { id:'r6', name:'대광로제비앙1차', distance:'0.75km', walk:'10분', bike:'3분', car:'2분', highlight:false },
+      { id:'r7', name:'파라곤센트럴시티1차', distance:'1.20km', walk:'17분', bike:'5분', car:'3분', highlight:false },
+      { id:'r8', name:'대광로제비앙2차(그랜드센텀)', distance:'1.10km', walk:'15분', bike:'4분', car:'3분', highlight:false },
+      { id:'r9', name:'파라곤센트럴시티3차', distance:'1.24km', walk:'17분', bike:'5분', car:'4분', highlight:false },
+      { id:'r10', name:'파라곤센트럴시티2차', distance:'1.44km', walk:'20분', bike:'6분', car:'4분', highlight:false },
+      { id:'r11', name:'오송서한이다음노블리스', distance:'1.46km', walk:'20분', bike:'6분', car:'4분', highlight:true },
+      { id:'r12', name:'동아라이크텐', distance:'1.70km', walk:'24분', bike:'7분', car:'5분', highlight:false }
+    ]}
+  ],
+  news: [
+    { id:'news1', image:'https://cdn.ccdn.co.kr/news/photo/202606/1084170_593913_5003.jpg', source:'충청매일', date:'2026.06.21', title:'세계 최대 R&D 클러스터…글로벌 패권 선점 (K-바이오 스퀘어, 오송)', link:'https://www.ccdn.co.kr/news/articleView.html?idxno=1084170' },
+    { id:'news2', image:'https://www.inews365.com/data/photos/20260625/art_17815947401245.jpg', source:'충북일보', date:'2026.06.16', title:"충북 AI 영재학교 설립 올해 말 '첫삽'…오송 첨단의료복합단지 일원", link:'https://www.inews365.com/mobile/article.html?no=923659' },
+    { id:'news3', image:'https://cdn.daejonilbo.com/news/photo/202606/2281590_716422_5814.jpg', source:'대전일보', date:'2026.06.14', title:'대통령 주문에 세종집무실 설계 보완 검토…인접 생활권 위상 강화', link:'https://www.daejonilbo.com/news/articleView.html?idxno=2281590' }
+  ]
+};
+
+let areaData = { cards:[], tables:[], news:[] };
+const areaDocRef = db.collection('site').doc('area-data');
+
+async function loadAreaData(){
+  try{
+    const doc = await areaDocRef.get();
+    if(doc.exists && doc.data() && Array.isArray(doc.data().cards)){
+      areaData = doc.data();
+    } else {
+      areaData = JSON.parse(JSON.stringify(DEFAULT_AREA_DATA));
+      await areaDocRef.set(areaData);
+    }
+  }catch(e){
+    console.error(e);
+    areaData = JSON.parse(JSON.stringify(DEFAULT_AREA_DATA));
+  }
+  renderAreaCards();
+  renderAreaTables();
+  renderAreaNews();
+}
+
+async function saveAreaData(){
+  try{
+    await areaDocRef.set(areaData);
+    return true;
+  }catch(e){
+    console.error(e);
+    showToast('저장 중 문제가 발생했어요.');
+    return false;
+  }
+}
+
+/* ---------- 카드(단지소개) ---------- */
+function renderAreaCards(){
+  const grid = document.getElementById('infoGrid');
+  if(!areaData.cards.length){
+    grid.innerHTML = '<p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">등록된 카드가 없어요.</p>';
+    return;
+  }
+  grid.innerHTML = areaData.cards.map(c => `
+    <div class="info-card ${c.highlight?'highlight':''}" data-card-id="${escapeHtml(c.id)}">
+      <div class="card-admin-row">
+        <button type="button" class="faq-edit-btn" data-card-edit="${escapeHtml(c.id)}">✏️</button>
+        <button type="button" class="faq-del-btn" data-card-del="${escapeHtml(c.id)}">🗑</button>
+      </div>
+      <div class="ic">${escapeHtml(c.icon)}</div>
+      <h4>${escapeHtml(c.title)}</h4>
+      <p>${escapeHtml(c.desc)}</p>
+      <div class="faq-edit-form" data-card-form="${escapeHtml(c.id)}">
+        <label>아이콘 (이모지 1개)</label>
+        <input type="text" data-card-icon-input="${escapeHtml(c.id)}" value="${escapeHtml(c.icon)}">
+        <label>제목</label>
+        <input type="text" data-card-title-input="${escapeHtml(c.id)}" value="${escapeHtml(c.title)}">
+        <label>내용</label>
+        <textarea data-card-desc-input="${escapeHtml(c.id)}">${escapeHtml(c.desc)}</textarea>
+        <label class="area-check-label"><input type="checkbox" data-card-highlight-input="${escapeHtml(c.id)}" ${c.highlight?'checked':''}> 강조 카드(진한 배경)로 표시</label>
+        <div class="faq-edit-arow">
+          <button type="button" class="btn btn-outline btn-sm" data-card-cancel="${escapeHtml(c.id)}">취소</button>
+          <button type="button" class="btn btn-rose btn-sm" data-card-save="${escapeHtml(c.id)}">저장</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('areaCardAddBtn').addEventListener('click', async ()=>{
+  const newId = 'card_' + Date.now();
+  areaData.cards.push({ id:newId, icon:'📍', title:'새 카드 제목', desc:'카드 내용을 입력해 주세요.', highlight:false });
+  const ok = await saveAreaData();
+  renderAreaCards();
+  if(ok){
+    const formEl = document.querySelector(`[data-card-form="${newId}"]`);
+    if(formEl){ formEl.classList.add('open'); formEl.scrollIntoView({behavior:'smooth', block:'center'}); }
+    showToast('새 카드가 추가되었어요. 내용을 작성하고 저장해 주세요.');
+  }
+});
+
+document.getElementById('infoGrid').addEventListener('click', async (e)=>{
+  const t = e.target;
+
+  const editId = t.getAttribute('data-card-edit');
+  if(editId){
+    document.querySelector(`[data-card-form="${editId}"]`).classList.add('open');
+    return;
+  }
+  const cancelId = t.getAttribute('data-card-cancel');
+  if(cancelId){
+    document.querySelector(`[data-card-form="${cancelId}"]`).classList.remove('open');
+    return;
+  }
+  const delId = t.getAttribute('data-card-del');
+  if(delId){
+    if(!confirm('이 카드를 삭제할까요?')) return;
+    areaData.cards = areaData.cards.filter(c => c.id !== delId);
+    const ok = await saveAreaData();
+    if(ok){ renderAreaCards(); showToast('카드가 삭제되었습니다.'); }
+    return;
+  }
+  const saveId = t.getAttribute('data-card-save');
+  if(saveId){
+    const icon = document.querySelector(`[data-card-icon-input="${saveId}"]`).value.trim();
+    const title = document.querySelector(`[data-card-title-input="${saveId}"]`).value.trim();
+    const desc = document.querySelector(`[data-card-desc-input="${saveId}"]`).value.trim();
+    const highlight = document.querySelector(`[data-card-highlight-input="${saveId}"]`).checked;
+    if(!title || !desc){ showToast('제목과 내용을 모두 입력해 주세요.'); return; }
+    const target = areaData.cards.find(c => c.id === saveId);
+    if(target){ target.icon = icon || '📍'; target.title = title; target.desc = desc; target.highlight = highlight; }
+    const ok = await saveAreaData();
+    if(ok){ renderAreaCards(); showToast('카드가 저장되었습니다.'); }
+    return;
+  }
+});
+
+/* ---------- 비교표(오송1산단/2산단 접근성) ---------- */
+function syncTableFromDOM(tableId){
+  const tb = areaData.tables.find(t => t.id === tableId);
+  if(!tb) return;
+  const wrapEl = document.querySelector(`[data-table-id="${tableId}"]`);
+  if(!wrapEl) return;
+  const titleEl = wrapEl.querySelector('[data-table-title]');
+  const tagEl = wrapEl.querySelector('[data-table-tag]');
+  if(titleEl) tb.title = titleEl.textContent.trim();
+  if(tagEl) tb.tag = tagEl.textContent.trim();
+  const rowMap = {};
+  tb.rows.forEach(r => rowMap[r.id] = r);
+  wrapEl.querySelectorAll('tbody tr[data-row-id]').forEach(rowEl => {
+    const r = rowMap[rowEl.getAttribute('data-row-id')];
+    if(!r) return;
+    r.name = rowEl.querySelector('[data-field="name"]').textContent.trim();
+    r.distance = rowEl.querySelector('[data-field="distance"]').textContent.trim();
+    r.walk = rowEl.querySelector('[data-field="walk"]').textContent.trim();
+    r.bike = rowEl.querySelector('[data-field="bike"]').textContent.trim();
+    r.car = rowEl.querySelector('[data-field="car"]').textContent.trim();
+  });
+}
+
+function renderAreaTables(){
+  const container = document.getElementById('compareContainer');
+  if(!areaData.tables.length){
+    container.innerHTML = '<p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">등록된 비교표가 없어요.</p>';
+    return;
+  }
+  const editable = isAdmin ? 'true' : 'false';
+  container.innerHTML = areaData.tables.map(tb => `
+    <div class="compare-wrap" data-table-id="${escapeHtml(tb.id)}">
+      <h3>
+        <span contenteditable="${editable}" data-table-title="${escapeHtml(tb.id)}">${escapeHtml(tb.title)}</span>
+        <span class="tag" contenteditable="${editable}" data-table-tag="${escapeHtml(tb.id)}">${escapeHtml(tb.tag)}</span>
+      </h3>
+      <div class="compare-scroll">
+        <table class="compare-table">
+          <thead><tr><th>단지명</th><th>직선거리</th><th>도보</th><th>자전거</th><th>차량</th><th class="admin-col">관리</th></tr></thead>
+          <tbody>
+            ${tb.rows.map(r => `
+            <tr class="${r.highlight?'me-row':''}" data-row-id="${escapeHtml(r.id)}">
+              <td contenteditable="${editable}" data-field="name">${escapeHtml(r.name)}</td>
+              <td contenteditable="${editable}" data-field="distance">${escapeHtml(r.distance)}</td>
+              <td contenteditable="${editable}" data-field="walk">${escapeHtml(r.walk)}</td>
+              <td contenteditable="${editable}" data-field="bike">${escapeHtml(r.bike)}</td>
+              <td contenteditable="${editable}" data-field="car">${escapeHtml(r.car)}</td>
+              <td class="admin-col">
+                <button type="button" class="faq-edit-btn" data-row-highlight="${escapeHtml(tb.id)}|${escapeHtml(r.id)}">📍</button>
+                <button type="button" class="faq-del-btn" data-row-del="${escapeHtml(tb.id)}|${escapeHtml(r.id)}">🗑</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="area-btn-row">
+        <button type="button" class="btn btn-outline btn-sm" data-row-add="${escapeHtml(tb.id)}">＋ 행 추가</button>
+        <button type="button" class="btn btn-rose btn-sm" data-table-save="${escapeHtml(tb.id)}">💾 표 저장</button>
+        <button type="button" class="btn btn-outline btn-sm" data-table-del="${escapeHtml(tb.id)}" style="color:#b3261e;border-color:#b3261e;">🗑 표 삭제</button>
+        <span class="area-hint">칸을 직접 클릭해 수정 후 [표 저장]을 눌러주세요</span>
+      </div>
+      <p class="compare-note">※ 직선거리 및 이동시간은 지도 서비스 기준 산출값이며, 실제 이동시간은 경로·신호 대기에 따라 달라질 수 있습니다.</p>
+    </div>
+  `).join('');
+}
+
+document.getElementById('areaTableAddBtn').addEventListener('click', async ()=>{
+  const newId = 'table_' + Date.now();
+  areaData.tables.push({ id:newId, title:'새 비교표 제목', tag:'', rows:[
+    { id:'row_'+Date.now(), name:'단지명', distance:'0km', walk:'0분', bike:'0분', car:'0분', highlight:false }
+  ]});
+  const ok = await saveAreaData();
+  renderAreaTables();
+  if(ok) showToast('새 비교표가 추가되었어요. 제목과 행 내용을 입력하고 저장해 주세요.');
+});
+
+document.getElementById('compareContainer').addEventListener('click', async (e)=>{
+  const t = e.target;
+
+  const addTableId = t.getAttribute('data-row-add');
+  if(addTableId){
+    syncTableFromDOM(addTableId);
+    const tb = areaData.tables.find(x => x.id === addTableId);
+    if(tb) tb.rows.push({ id:'row_'+Date.now(), name:'단지명', distance:'0km', walk:'0분', bike:'0분', car:'0분', highlight:false });
+    renderAreaTables();
+    showToast('새 행이 추가되었어요. 내용을 입력하고 [표 저장]을 눌러주세요.');
+    return;
+  }
+
+  const saveTableId = t.getAttribute('data-table-save');
+  if(saveTableId){
+    syncTableFromDOM(saveTableId);
+    const ok = await saveAreaData();
+    if(ok){ renderAreaTables(); showToast('비교표가 저장되었습니다.'); }
+    return;
+  }
+
+  const delTableId = t.getAttribute('data-table-del');
+  if(delTableId){
+    if(!confirm('이 비교표 전체를 삭제할까요?')) return;
+    areaData.tables = areaData.tables.filter(x => x.id !== delTableId);
+    const ok = await saveAreaData();
+    if(ok){ renderAreaTables(); showToast('비교표가 삭제되었습니다.'); }
+    return;
+  }
+
+  const rowHighlightKey = t.getAttribute('data-row-highlight');
+  if(rowHighlightKey){
+    const [tableId, rowId] = rowHighlightKey.split('|');
+    syncTableFromDOM(tableId);
+    const tb = areaData.tables.find(x => x.id === tableId);
+    const row = tb && tb.rows.find(r => r.id === rowId);
+    if(row) row.highlight = !row.highlight;
+    const ok = await saveAreaData();
+    if(ok){ renderAreaTables(); showToast(row && row.highlight ? '📍 표시로 강조했어요.' : '📍 강조를 해제했어요.'); }
+    return;
+  }
+
+  const rowDelKey = t.getAttribute('data-row-del');
+  if(rowDelKey){
+    const [tableId, rowId] = rowDelKey.split('|');
+    if(!confirm('이 행을 삭제할까요?')) return;
+    syncTableFromDOM(tableId);
+    const tb = areaData.tables.find(x => x.id === tableId);
+    if(tb) tb.rows = tb.rows.filter(r => r.id !== rowId);
+    const ok = await saveAreaData();
+    if(ok){ renderAreaTables(); showToast('행이 삭제되었습니다.'); }
+    return;
+  }
+});
+
+/* ---------- 뉴스카드 ---------- */
+function renderAreaNews(){
+  const grid = document.getElementById('newsGrid');
+  if(!areaData.news.length){
+    grid.innerHTML = '<p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">등록된 뉴스카드가 없어요.</p>';
+    return;
+  }
+  grid.innerHTML = areaData.news.map(n => `
+    <div class="news-card" data-news-id="${escapeHtml(n.id)}">
+      <div class="card-admin-row">
+        <button type="button" class="faq-edit-btn" data-news-edit="${escapeHtml(n.id)}">✏️</button>
+        <button type="button" class="faq-del-btn" data-news-del="${escapeHtml(n.id)}">🗑</button>
+      </div>
+      ${n.image ? `<img src="${escapeHtml(n.image)}" alt="${escapeHtml(n.title)}">` : ''}
+      <div class="n-body">
+        <div class="n-src">${escapeHtml(n.source)} · ${escapeHtml(n.date)}</div>
+        <h5>${escapeHtml(n.title)}</h5>
+        <a class="n-link" href="${escapeHtml(n.link)}" target="_blank" rel="noopener">기사 보기 →</a>
+      </div>
+      <div class="faq-edit-form" data-news-form="${escapeHtml(n.id)}">
+        <label>이미지 URL</label>
+        <input type="text" data-news-image-input="${escapeHtml(n.id)}" value="${escapeHtml(n.image)}">
+        <label>언론사</label>
+        <input type="text" data-news-source-input="${escapeHtml(n.id)}" value="${escapeHtml(n.source)}">
+        <label>보도일자 (예: 2026.06.21)</label>
+        <input type="text" data-news-date-input="${escapeHtml(n.id)}" value="${escapeHtml(n.date)}">
+        <label>기사 제목</label>
+        <input type="text" data-news-title-input="${escapeHtml(n.id)}" value="${escapeHtml(n.title)}">
+        <label>기사 링크(URL)</label>
+        <input type="text" data-news-link-input="${escapeHtml(n.id)}" value="${escapeHtml(n.link)}">
+        <div class="faq-edit-arow">
+          <button type="button" class="btn btn-outline btn-sm" data-news-cancel="${escapeHtml(n.id)}">취소</button>
+          <button type="button" class="btn btn-rose btn-sm" data-news-save="${escapeHtml(n.id)}">저장</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('areaNewsAddBtn').addEventListener('click', async ()=>{
+  const newId = 'news_' + Date.now();
+  areaData.news.push({ id:newId, image:'', source:'언론사명', date:'YYYY.MM.DD', title:'기사 제목을 입력해 주세요', link:'https://' });
+  const ok = await saveAreaData();
+  renderAreaNews();
+  if(ok){
+    const formEl = document.querySelector(`[data-news-form="${newId}"]`);
+    if(formEl){ formEl.classList.add('open'); formEl.scrollIntoView({behavior:'smooth', block:'center'}); }
+    showToast('새 뉴스카드가 추가되었어요. 내용을 작성하고 저장해 주세요.');
+  }
+});
+
+document.getElementById('newsGrid').addEventListener('click', async (e)=>{
+  const t = e.target;
+
+  const editId = t.getAttribute('data-news-edit');
+  if(editId){
+    document.querySelector(`[data-news-form="${editId}"]`).classList.add('open');
+    return;
+  }
+  const cancelId = t.getAttribute('data-news-cancel');
+  if(cancelId){
+    document.querySelector(`[data-news-form="${cancelId}"]`).classList.remove('open');
+    return;
+  }
+  const delId = t.getAttribute('data-news-del');
+  if(delId){
+    if(!confirm('이 뉴스카드를 삭제할까요?')) return;
+    areaData.news = areaData.news.filter(n => n.id !== delId);
+    const ok = await saveAreaData();
+    if(ok){ renderAreaNews(); showToast('뉴스카드가 삭제되었습니다.'); }
+    return;
+  }
+  const saveId = t.getAttribute('data-news-save');
+  if(saveId){
+    const image = document.querySelector(`[data-news-image-input="${saveId}"]`).value.trim();
+    const source = document.querySelector(`[data-news-source-input="${saveId}"]`).value.trim();
+    const date = document.querySelector(`[data-news-date-input="${saveId}"]`).value.trim();
+    const title = document.querySelector(`[data-news-title-input="${saveId}"]`).value.trim();
+    const link = document.querySelector(`[data-news-link-input="${saveId}"]`).value.trim();
+    if(!title || !link){ showToast('기사 제목과 링크는 필수예요.'); return; }
+    const target = areaData.news.find(n => n.id === saveId);
+    if(target){ target.image = image; target.source = source; target.date = date; target.title = title; target.link = link; }
+    const ok = await saveAreaData();
+    if(ok){ renderAreaNews(); showToast('뉴스카드가 저장되었습니다.'); }
+    return;
+  }
+});
 
 /* ===================== 고객 후기 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제 + 답글) ===================== */
 const DEFAULT_REVIEWS = [
@@ -1754,6 +2071,7 @@ loadReviews();
 loadPosts();
 loadBlogPosts();
 loadListings();
+loadAreaData();
 </script>
 </body>
 </html>
