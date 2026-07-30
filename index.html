@@ -398,6 +398,21 @@ footer .f-links a:hover{color:var(--rose-deep);}
 }
 @keyframes lmSlideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .lm-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:var(--cream-deep);font-size:20px;color:var(--ink);display:flex;align-items:center;justify-content:center;z-index:2;}
+
+/* ---------- 유튜브 ---------- */
+.youtube-grid{display:grid;gap:18px;grid-template-columns:1fr;margin-top:8px;}
+@media (min-width:760px){.youtube-grid{grid-template-columns:repeat(3,1fr);}}
+.youtube-card{position:relative;background:var(--white);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);display:flex;flex-direction:column;}
+.yt-thumb-btn{position:relative;display:block;width:100%;height:170px;padding:0;background:linear-gradient(135deg,var(--rose-pale),var(--gold-pale));}
+.yt-thumb-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+.yt-thumb-empty{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--rose-deep);}
+.yt-play-badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:rgba(25,31,40,0.65);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;padding-left:3px;}
+.youtube-card .b-body{padding:16px 18px 20px;}
+.youtube-card h4{font-size:15.5px;font-weight:700;line-height:1.4;}
+.yt-embed-wrap{position:relative;width:100%;padding-bottom:56.25%;height:0;border-radius:var(--radius-md);overflow:hidden;background:#000;}
+.yt-embed-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.youtube-modal{max-width:720px;padding:44px 14px 20px;}
+@media (min-width:700px){.youtube-modal{padding:52px 20px 24px;}}
 .lm-gallery{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:0 -20px 18px;padding-left:20px;padding-right:20px;scroll-snap-type:x mandatory;}
 .lm-gallery img{flex:0 0 78%;height:220px;object-fit:cover;border-radius:var(--radius-md);scroll-snap-align:start;}
 @media (min-width:600px){.lm-gallery img{flex:0 0 280px;height:240px;}}
@@ -516,6 +531,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#listings">매물</a>
       <a href="#blog">블로그</a>
       <a href="#area">지역정보</a>
+      <a href="#youtube">유튜브</a>
       <a href="#faq">FAQ</a>
       <a href="#board">상담게시판</a>
     </nav>
@@ -536,6 +552,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <a href="#listings">매물</a>
     <a href="#blog">블로그</a>
     <a href="#area">지역정보</a>
+    <a href="#youtube">유튜브</a>
     <a href="#faq">FAQ</a>
     <a href="#board">상담게시판</a>
     <a href="#contact">오시는 길</a>
@@ -725,6 +742,30 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <button type="button" id="areaNewsAddBtn" class="faq-add-btn">＋ 뉴스카드 추가하기</button>
   </div>
 </section>
+
+<div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
+
+<!-- ===== 유튜브 ===== -->
+<section class="section" id="youtube" style="background:var(--white);">
+  <div class="wrap">
+    <div class="blog-head-row">
+      <div class="eyebrow" style="justify-content:center;">유튜브</div>
+      <h2>YOUTUBE</h2>
+      <a class="b-readall" href="https://www.youtube.com/@TV-tr6gw" target="_blank" rel="noopener">채널 바로가기</a>
+    </div>
+    <div class="youtube-grid" id="youtubeGrid">
+      <p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">영상을 불러오는 중...</p>
+    </div>
+    <button type="button" id="youtubeAddBtn" class="faq-add-btn">＋ 영상 추가하기</button>
+  </div>
+</section>
+
+<div id="youtubeModalOverlay" class="listing-modal-overlay">
+  <div class="listing-modal youtube-modal">
+    <button class="lm-close" id="youtubeModalClose">×</button>
+    <div id="youtubeModalBody"></div>
+  </div>
+</div>
 
 <div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
 
@@ -1098,6 +1139,7 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     renderAreaCards();
     renderAreaTables();
     renderAreaNews();
+    renderYoutube();
     return;
   }
   const pw = prompt('사장님 모드 비밀번호를 입력해 주세요.');
@@ -1109,11 +1151,12 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     document.body.classList.add('admin-mode');
     if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.add('admin-mode');
     if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'inline-flex';
-    showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
+    showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보·유튜브 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
     renderPosts();
     renderAreaCards();
     renderAreaTables();
     renderAreaNews();
+    renderYoutube();
   } else {
     showToast('비밀번호가 올바르지 않아요.');
   }
@@ -1662,6 +1705,147 @@ document.getElementById('newsGrid').addEventListener('click', async (e)=>{
     return;
   }
 });
+
+/* ===================== 유튜브 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제) ===================== */
+let youtubeData = { videos: [] };
+const youtubeDocRef = db.collection('site').doc('youtube-data');
+
+function extractYoutubeId(url){
+  if(!url) return '';
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/|live\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+
+async function loadYoutubeData(){
+  try{
+    const doc = await youtubeDocRef.get();
+    if(doc.exists){
+      youtubeData = doc.data();
+      if(!Array.isArray(youtubeData.videos)) youtubeData.videos = [];
+    } else {
+      youtubeData = { videos: [] };
+      await youtubeDocRef.set(youtubeData);
+    }
+  }catch(err){
+    console.error(err);
+    youtubeData = { videos: [] };
+  }
+  renderYoutube();
+}
+
+async function saveYoutubeData(){
+  try{
+    await youtubeDocRef.set(youtubeData);
+    return true;
+  }catch(err){
+    console.error(err);
+    showToast('저장 중 오류가 발생했어요.');
+    return false;
+  }
+}
+
+function renderYoutube(){
+  const grid = document.getElementById('youtubeGrid');
+  if(!youtubeData.videos.length){
+    grid.innerHTML = '<p style="padding:0 4px;color:var(--ink-soft);font-size:13.5px;">등록된 영상이 없어요.</p>';
+    return;
+  }
+  grid.innerHTML = youtubeData.videos.map(v => {
+    const vid = extractYoutubeId(v.url);
+    const thumb = vid ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg` : '';
+    return `
+    <div class="youtube-card" data-yt-id="${escapeHtml(v.id)}">
+      <div class="card-admin-row">
+        <button type="button" class="faq-edit-btn" data-yt-edit="${escapeHtml(v.id)}">✏️</button>
+        <button type="button" class="faq-del-btn" data-yt-del="${escapeHtml(v.id)}">🗑</button>
+      </div>
+      <button type="button" class="yt-thumb-btn" data-yt-play="${escapeHtml(vid)}" ${!vid ? 'disabled' : ''}>
+        ${thumb ? `<img src="${thumb}" alt="${escapeHtml(v.title || '유튜브 영상')}">` : '<div class="yt-thumb-empty">▶</div>'}
+        ${vid ? '<span class="yt-play-badge">▶</span>' : ''}
+      </button>
+      <div class="b-body">
+        <h4>${escapeHtml(v.title || '제목을 입력해 주세요')}</h4>
+      </div>
+      <div class="faq-edit-form" data-yt-form="${escapeHtml(v.id)}">
+        <label>유튜브 영상 링크(URL)</label>
+        <input type="text" placeholder="https://www.youtube.com/watch?v=..." data-yt-url-input="${escapeHtml(v.id)}" value="${escapeHtml(v.url)}">
+        <label>영상 제목</label>
+        <input type="text" data-yt-title-input="${escapeHtml(v.id)}" value="${escapeHtml(v.title)}">
+        <div class="faq-edit-arow">
+          <button type="button" class="btn btn-outline btn-sm" data-yt-cancel="${escapeHtml(v.id)}">취소</button>
+          <button type="button" class="btn btn-rose btn-sm" data-yt-save="${escapeHtml(v.id)}">저장</button>
+        </div>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+document.getElementById('youtubeAddBtn').addEventListener('click', async ()=>{
+  const newId = 'yt_' + Date.now();
+  youtubeData.videos.unshift({ id:newId, url:'', title:'' });
+  const ok = await saveYoutubeData();
+  renderYoutube();
+  if(ok){
+    const formEl = document.querySelector(`[data-yt-form="${newId}"]`);
+    if(formEl){ formEl.classList.add('open'); formEl.scrollIntoView({behavior:'smooth', block:'center'}); }
+    showToast('새 영상 카드가 추가되었어요. 유튜브 링크를 붙여넣고 저장해 주세요.');
+  }
+});
+
+document.getElementById('youtubeGrid').addEventListener('click', async (e)=>{
+  const t = e.target.closest('[data-yt-edit],[data-yt-cancel],[data-yt-del],[data-yt-save],[data-yt-play]');
+  if(!t) return;
+
+  const editId = t.getAttribute('data-yt-edit');
+  if(editId){
+    document.querySelector(`[data-yt-form="${editId}"]`).classList.add('open');
+    return;
+  }
+  const cancelId = t.getAttribute('data-yt-cancel');
+  if(cancelId){
+    document.querySelector(`[data-yt-form="${cancelId}"]`).classList.remove('open');
+    return;
+  }
+  const delId = t.getAttribute('data-yt-del');
+  if(delId){
+    if(!confirm('이 영상을 삭제할까요?')) return;
+    youtubeData.videos = youtubeData.videos.filter(v => v.id !== delId);
+    const ok = await saveYoutubeData();
+    if(ok){ renderYoutube(); showToast('영상이 삭제되었습니다.'); }
+    return;
+  }
+  const saveId = t.getAttribute('data-yt-save');
+  if(saveId){
+    const url = document.querySelector(`[data-yt-url-input="${saveId}"]`).value.trim();
+    const title = document.querySelector(`[data-yt-title-input="${saveId}"]`).value.trim();
+    if(!extractYoutubeId(url)){ showToast('올바른 유튜브 영상 링크를 입력해 주세요.'); return; }
+    const target = youtubeData.videos.find(v => v.id === saveId);
+    if(target){ target.url = url; target.title = title; }
+    const ok = await saveYoutubeData();
+    if(ok){ renderYoutube(); showToast('영상이 저장되었습니다.'); }
+    return;
+  }
+  const playVid = t.getAttribute('data-yt-play');
+  if(playVid){
+    document.getElementById('youtubeModalBody').innerHTML = `
+      <div class="yt-embed-wrap">
+        <iframe src="https://www.youtube.com/embed/${playVid}?autoplay=1" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    `;
+    document.getElementById('youtubeModalOverlay').classList.add('open');
+    return;
+  }
+});
+
+document.getElementById('youtubeModalOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'youtubeModalClose' || e.target.id === 'youtubeModalOverlay'){
+    document.getElementById('youtubeModalOverlay').classList.remove('open');
+    document.getElementById('youtubeModalBody').innerHTML = '';
+  }
+});
+
+loadYoutubeData();
 
 /* ===================== 고객 후기 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제 + 답글) ===================== */
 const DEFAULT_REVIEWS = [
