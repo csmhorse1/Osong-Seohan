@@ -288,6 +288,9 @@ body.admin-mode .admin-col{display:table-cell;}
 .faq-edit-form label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;}
 .faq-edit-form input[type="text"]{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-family:inherit;font-size:13.8px;background:var(--white);margin-bottom:10px;}
 .faq-edit-form textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-family:inherit;font-size:13.5px;background:var(--white);}
+.faq-edit-form.wide{padding:18px;border:1px dashed var(--line);border-radius:var(--radius-md);margin-top:18px;background:var(--cream);}
+.section-edit-row{display:flex;justify-content:flex-end;margin-bottom:-6px;}
+.section-edit-row .faq-edit-btn{position:static;}
 .faq-edit-arow{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;}
 .faq-add-btn{display:none;width:100%;margin-top:14px;padding:14px;border-radius:var(--radius-md);border:1.5px dashed var(--rose-deep);background:transparent;color:var(--rose-deep);font-weight:700;font-size:14px;cursor:pointer;}
 body.admin-mode .faq-add-btn{display:block;}
@@ -609,17 +612,32 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <!-- ===== 서한이다음 강조 배너 ===== -->
 <section class="daeum-banner" id="daeum">
   <div class="wrap">
-    <div class="daeum-loc">📍 충북 청주시 흥덕구 오송생명14로 217 · 서한이다음노블리스 단지내 상가 1동 102호</div>
+    <div class="daeum-loc" id="daeumLoc">📍 충북 청주시 흥덕구 오송읍 오송생명14로 217 · 서한이다음노블리스 단지내 상가 1동 102호</div>
     <h2>오송서한이다음 <span>전문부동산</span></h2>
-    <p>미소공인중개사사무소는 오송서한이다음노블리스 단지 내 상가에 직접 입점한 오송역 도보 [X]분 거리의 부동산 중개사무소로, 입주민들의 시세 변화·단지 분위기·매물 정보를 가장 빠르게 전해드립니다. 단지 내 매매·전세·월세 우선 안내는 물론, 오송읍 전체 매물도 함께 상담해 드려요.</p>
+    <p id="daeumDesc">미소공인중개사사무소는 오송서한이다음노블리스 단지 내 상가에 직접 입점한 오송역 도보 거리의 부동산 중개사무소로, 입주민들의 시세 변화·단지 분위기·매물 정보를 가장 빠르게 전해드립니다. 단지 내 매매·전세·월세 우선 안내는 물론, 오송읍 전체 매물도 함께 상담해 드려요.</p>
     <a class="kakao-cta" href="https://open.kakao.com/o/p4r6nezi" target="_blank" rel="noopener">
       <span class="kakao-ico">💬</span> 급매정보받기 →
     </a>
-    <div class="daeum-chip-row">
-      <span class="daeum-chip">단지 내 상가 입점</span>
-      <span class="daeum-chip">입주민 시세 상시 공유</span>
-      <span class="daeum-chip">오송역 도보 접근</span>
-      <span class="daeum-chip">공인중개사 since 2021</span>
+    <div class="daeum-chip-row" id="daeumChipRow">
+      <span class="daeum-chip" id="daeumChip1">단지 내 상가 입점</span>
+      <span class="daeum-chip" id="daeumChip2">입주민 시세 상시 공유</span>
+      <span class="daeum-chip" id="daeumChip3">오송역 도보 접근</span>
+      <span class="daeum-chip" id="daeumChip4">공인중개사 since 2021</span>
+    </div>
+    <button type="button" id="daeumEditBtn" class="faq-add-btn">✏️ 이 문구 수정하기</button>
+    <div class="faq-edit-form wide" id="daeumEditForm">
+      <label>위치 안내 문구</label>
+      <input type="text" id="daeumLocInput">
+      <label>소개 문구</label>
+      <textarea id="daeumDescInput" rows="4"></textarea>
+      <label>태그 1</label><input type="text" id="daeumChip1Input">
+      <label>태그 2</label><input type="text" id="daeumChip2Input">
+      <label>태그 3</label><input type="text" id="daeumChip3Input">
+      <label>태그 4</label><input type="text" id="daeumChip4Input">
+      <div class="faq-edit-arow">
+        <button type="button" class="btn btn-outline btn-sm" id="daeumEditCancel">취소</button>
+        <button type="button" class="btn btn-rose btn-sm" id="daeumEditSave">저장</button>
+      </div>
     </div>
   </div>
 </section>
@@ -871,13 +889,28 @@ footer .f-links a:hover{color:var(--rose-deep);}
         <div class="contact-line">📱 <a href="tel:01076600411">M 010-7660-0411</a></div>
         <div class="contact-line">📠 F 0504-496-0197</div>
         <div class="contact-line">✉️ <a href="mailto:csmhorse1@gmail.com">csmhorse1@gmail.com</a></div>
-        <div class="contact-line">📍 충북 청주시 흥덕구 오송생명14로 217<br>오송역 서한이다음노블리스 단지내 상가 1동 102호</div>
+        <div class="contact-line">📍 <span id="contactAddressText">충북 청주시 흥덕구 오송읍 오송생명14로 217<br>서한이다음노블리스 단지내 상가 1동 102호 · 오송미소부동산</span></div>
         <div class="contact-line">🕒 평일 09:00–19:00 / 주말 사전예약</div>
       </div>
       <div class="map-card">
         <div class="pin">📍</div>
-        <p><b>오송역 서한이다음노블리스 상가 1동 102호</b><br>네이버지도 임베드 코드를<br>이 영역에 넣으면 더 정확하게 보여드릴 수 있어요.</p>
-        <a class="btn btn-rose btn-sm" href="https://map.naver.com/p/search/충북%20청주시%20흥덕구%20오송생명14로%20217" target="_blank" rel="noopener">네이버지도에서 보기</a>
+        <p><b id="mapCardTitle">오송미소부동산 · 상가 1동 102호</b><br><span id="mapCardNote">충북 청주시 흥덕구 오송읍 오송생명14로 217</span></p>
+        <a class="btn btn-rose btn-sm" id="mapCardLink" href="https://map.naver.com/p/search/충북%20청주시%20흥덕구%20오송읍%20오송생명14로%20217" target="_blank" rel="noopener">네이버지도에서 보기</a>
+      </div>
+    </div>
+    <button type="button" id="contactEditBtn" class="faq-add-btn">✏️ 주소/지도 문구 수정하기</button>
+    <div class="faq-edit-form wide" id="contactEditForm">
+      <label>전화번호 카드에 표시될 주소 (줄바꿈하려면 Enter)</label>
+      <textarea id="contactAddressInput" rows="2"></textarea>
+      <label>지도 카드 제목</label>
+      <input type="text" id="mapCardTitleInput">
+      <label>지도 카드 보조 문구</label>
+      <input type="text" id="mapCardNoteInput">
+      <label>네이버지도 링크(URL)</label>
+      <input type="text" id="mapCardLinkInput">
+      <div class="faq-edit-arow">
+        <button type="button" class="btn btn-outline btn-sm" id="contactEditCancel">취소</button>
+        <button type="button" class="btn btn-rose btn-sm" id="contactEditSave">저장</button>
       </div>
     </div>
   </div>
@@ -891,7 +924,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <div class="f-meta">
         대표 조상미<br>
         사업자등록번호 293-73-00611 · 중개업등록번호 제43113-2023-00163호<br>
-        충북 청주시 흥덕구 오송생명14로 217, 서한이다음노블리스 단지내 상가 1동 102호<br>
+        충북 청주시 흥덕구 오송읍 오송생명14로 217, 서한이다음노블리스 단지내 상가 1동 102호<br>
         T 043-233-5949 · M 010-7660-0411 · csmhorse1@gmail.com
       </div>
     </div>
@@ -1705,6 +1738,130 @@ document.getElementById('newsGrid').addEventListener('click', async (e)=>{
     return;
   }
 });
+
+/* ===================== 상단 소개 배너(오송서한이다음 전문부동산) - Firestore 연동, 사장님 모드에서 문구 수정 ===================== */
+let introData = {
+  loc: '📍 충북 청주시 흥덕구 오송읍 오송생명14로 217 · 서한이다음노블리스 단지내 상가 1동 102호',
+  desc: '미소공인중개사사무소는 오송서한이다음노블리스 단지 내 상가에 직접 입점한 오송역 도보 거리의 부동산 중개사무소로, 입주민들의 시세 변화·단지 분위기·매물 정보를 가장 빠르게 전해드립니다. 단지 내 매매·전세·월세 우선 안내는 물론, 오송읍 전체 매물도 함께 상담해 드려요.',
+  chip1: '단지 내 상가 입점',
+  chip2: '입주민 시세 상시 공유',
+  chip3: '오송역 도보 접근',
+  chip4: '공인중개사 since 2021'
+};
+const introDocRef = db.collection('site').doc('intro-data');
+
+async function loadIntroData(){
+  try{
+    const doc = await introDocRef.get();
+    if(doc.exists){
+      introData = Object.assign({}, introData, doc.data());
+    } else {
+      await introDocRef.set(introData);
+    }
+  }catch(err){ console.error(err); }
+  renderIntro();
+}
+
+async function saveIntroData(){
+  try{ await introDocRef.set(introData); return true; }
+  catch(err){ console.error(err); showToast('저장 중 오류가 발생했어요.'); return false; }
+}
+
+function renderIntro(){
+  document.getElementById('daeumLoc').textContent = introData.loc;
+  document.getElementById('daeumDesc').textContent = introData.desc;
+  document.getElementById('daeumChip1').textContent = introData.chip1;
+  document.getElementById('daeumChip2').textContent = introData.chip2;
+  document.getElementById('daeumChip3').textContent = introData.chip3;
+  document.getElementById('daeumChip4').textContent = introData.chip4;
+}
+
+document.getElementById('daeumEditBtn').addEventListener('click', ()=>{
+  document.getElementById('daeumLocInput').value = introData.loc;
+  document.getElementById('daeumDescInput').value = introData.desc;
+  document.getElementById('daeumChip1Input').value = introData.chip1;
+  document.getElementById('daeumChip2Input').value = introData.chip2;
+  document.getElementById('daeumChip3Input').value = introData.chip3;
+  document.getElementById('daeumChip4Input').value = introData.chip4;
+  document.getElementById('daeumEditForm').classList.add('open');
+});
+document.getElementById('daeumEditCancel').addEventListener('click', ()=>{
+  document.getElementById('daeumEditForm').classList.remove('open');
+});
+document.getElementById('daeumEditSave').addEventListener('click', async ()=>{
+  introData.loc = document.getElementById('daeumLocInput').value.trim();
+  introData.desc = document.getElementById('daeumDescInput').value.trim();
+  introData.chip1 = document.getElementById('daeumChip1Input').value.trim();
+  introData.chip2 = document.getElementById('daeumChip2Input').value.trim();
+  introData.chip3 = document.getElementById('daeumChip3Input').value.trim();
+  introData.chip4 = document.getElementById('daeumChip4Input').value.trim();
+  const ok = await saveIntroData();
+  if(ok){
+    renderIntro();
+    document.getElementById('daeumEditForm').classList.remove('open');
+    showToast('소개 문구가 저장되었습니다.');
+  }
+});
+loadIntroData();
+
+/* ===================== 오시는 길(주소/지도카드) - Firestore 연동, 사장님 모드에서 문구 수정 ===================== */
+let contactData = {
+  address: '충북 청주시 흥덕구 오송읍 오송생명14로 217\n서한이다음노블리스 단지내 상가 1동 102호 · 오송미소부동산',
+  mapTitle: '오송미소부동산 · 상가 1동 102호',
+  mapNote: '충북 청주시 흥덕구 오송읍 오송생명14로 217',
+  mapUrl: 'https://map.naver.com/p/search/충북%20청주시%20흥덕구%20오송읍%20오송생명14로%20217'
+};
+const contactDocRef = db.collection('site').doc('contact-data');
+
+async function loadContactData(){
+  try{
+    const doc = await contactDocRef.get();
+    if(doc.exists){
+      contactData = Object.assign({}, contactData, doc.data());
+    } else {
+      await contactDocRef.set(contactData);
+    }
+  }catch(err){ console.error(err); }
+  renderContact();
+}
+
+async function saveContactData(){
+  try{ await contactDocRef.set(contactData); return true; }
+  catch(err){ console.error(err); showToast('저장 중 오류가 발생했어요.'); return false; }
+}
+
+function renderContact(){
+  document.getElementById('contactAddressText').innerHTML = escapeHtml(contactData.address).replace(/\n/g,'<br>');
+  document.getElementById('mapCardTitle').textContent = contactData.mapTitle;
+  document.getElementById('mapCardNote').textContent = contactData.mapNote;
+  document.getElementById('mapCardLink').href = contactData.mapUrl;
+}
+
+document.getElementById('contactEditBtn').addEventListener('click', ()=>{
+  document.getElementById('contactAddressInput').value = contactData.address;
+  document.getElementById('mapCardTitleInput').value = contactData.mapTitle;
+  document.getElementById('mapCardNoteInput').value = contactData.mapNote;
+  document.getElementById('mapCardLinkInput').value = contactData.mapUrl;
+  document.getElementById('contactEditForm').classList.add('open');
+});
+document.getElementById('contactEditCancel').addEventListener('click', ()=>{
+  document.getElementById('contactEditForm').classList.remove('open');
+});
+document.getElementById('contactEditSave').addEventListener('click', async ()=>{
+  const url = document.getElementById('mapCardLinkInput').value.trim();
+  if(!/^https?:\/\//.test(url)){ showToast('네이버지도 링크는 http(s)://로 시작해야 해요.'); return; }
+  contactData.address = document.getElementById('contactAddressInput').value.trim();
+  contactData.mapTitle = document.getElementById('mapCardTitleInput').value.trim();
+  contactData.mapNote = document.getElementById('mapCardNoteInput').value.trim();
+  contactData.mapUrl = url;
+  const ok = await saveContactData();
+  if(ok){
+    renderContact();
+    document.getElementById('contactEditForm').classList.remove('open');
+    showToast('주소/지도 문구가 저장되었습니다.');
+  }
+});
+loadContactData();
 
 /* ===================== 유튜브 (Firestore 동적 렌더링, 사장님 모드에서 추가/수정/삭제) ===================== */
 let youtubeData = { videos: [] };
