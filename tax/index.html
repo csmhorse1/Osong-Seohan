@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E3A8A">
+<title>오송 아파트 보유세 계산기</title>
+<meta name="description" content="오송역서한이다음노블리스 · 오송역동아라이크텐 · 오송파라곤센트럴시티1차 전용 보유세 계산기">
+<style>
+  :root {
+    --blue: #1E3A8A;
+    --blue-d: #172554;
+    --page: #EAEBEC;
+    --card: #FFFFFF;
+    --fg: #171719;
+    --fg-2: #4E5968;
+    --fg-3: #5B6472;
+    --line: rgba(112,115,124,.16);
+    --font: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--fg);
+    font-family: var(--font); -webkit-font-smoothing: antialiased; letter-spacing: -.01em;
+  }
+  .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--card); padding: 0 20px 40px; }
+  header { padding: 48px 0 8px; text-align: center; }
+  .eyebrow { font-size: 13px; font-weight: 700; color: var(--blue); letter-spacing: .02em; margin-bottom: 10px; }
+  h1 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 8px; line-height: 1.35; }
+  .sub { font-size: 14px; color: var(--fg-3); margin-bottom: 32px; line-height: 1.5; }
+  .list { display: flex; flex-direction: column; gap: 12px; }
+  a.card {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 20px; border-radius: 16px; border: 1px solid var(--line);
+    background: var(--card); text-decoration: none; color: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  a.card:hover { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,58,138,.08); }
+  .card-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .card-meta { font-size: 13px; color: var(--fg-3); }
+  .arrow { font-size: 20px; color: var(--blue); flex-shrink: 0; }
+  footer { margin-top: 40px; text-align: center; font-size: 13px; color: var(--fg-3); }
+  footer .agency { font-weight: 700; color: var(--fg-2); }
+  a.tel { color: var(--blue); text-decoration: none; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="eyebrow">청주 오송읍</div>
+      <h1>우리 아파트<br>보유세, 얼마나 나올까?</h1>
+      <p class="sub">단지를 선택하면 동·호수별 2026년 공시가격 기준<br>재산세 + 종합부동산세를 바로 계산해드려요</p>
+    </header>
+    <div class="list">
+      <a class="card" href="seohan/">
+        <div>
+          <div class="card-name">오송역서한이다음노블리스</div>
+          <div class="card-meta">1,113세대 · 12개동</div>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+      <a class="card" href="donga/">
+        <div>
+          <div class="card-name">오송역동아라이크텐</div>
+          <div class="card-meta">970세대 · 10개동</div>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+      <a class="card" href="paragon/">
+        <div>
+          <div class="card-name">오송파라곤센트럴시티1차</div>
+          <div class="card-meta">2,415세대 · 19개동</div>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+    </div>
+    <footer>
+      <p class="agency">오송미소부동산</p>
+      <p>대표 공인중개사 조상미 · <a class="tel" href="tel:010.7660.0411">010.7660.0411</a></p>
+    </footer>
+  </div>
+</body>
+</html>
