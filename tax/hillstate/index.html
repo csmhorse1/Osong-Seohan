@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E3A8A">
+<title>힐스테이트오송역퍼스트 보유세 계산기</title>
+<meta name="description" content="힐스테이트오송역퍼스트 전용 보유세 계산기 — 입주 후 공시가격 발표 시 공개 예정">
+<style>
+  :root {
+    --blue: #1E3A8A;
+    --page: #EAEBEC;
+    --card: #FFFFFF;
+    --fg: #171719;
+    --fg-2: #4E5968;
+    --fg-3: #5B6472;
+    --line: rgba(112,115,124,.16);
+    --font: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--fg);
+    font-family: var(--font); -webkit-font-smoothing: antialiased; letter-spacing: -.01em;
+  }
+  .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; background: var(--card); display: flex; flex-direction: column; }
+  .body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 28px; }
+  .badge {
+    font-size: 13px; font-weight: 800; color: var(--blue); background: rgba(30,58,138,.08);
+    border-radius: 999px; padding: 8px 18px; margin-bottom: 22px; letter-spacing: .02em;
+  }
+  h1 { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 12px; line-height: 1.4; }
+  p.desc { font-size: 14.5px; color: var(--fg-3); line-height: 1.6; margin: 0 0 6px; max-width: 320px; }
+  .info-card {
+    margin-top: 28px; width: 100%; max-width: 320px; text-align: left;
+    border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; background: var(--page);
+  }
+  .info-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 7px 0; }
+  .info-row + .info-row { border-top: 1px solid var(--line); }
+  .info-row .k { color: var(--fg-3); }
+  .info-row .v { font-weight: 700; color: var(--fg); }
+  a.btn {
+    margin-top: 28px; display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: #fff; padding: 14px 26px; border-radius: 30px;
+    font-size: 15px; font-weight: 700; text-decoration: none;
+  }
+  footer { padding: 24px 20px; text-align: center; font-size: 13px; color: var(--fg-3); }
+  footer a { color: var(--blue); text-decoration: none; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="body">
+      <div class="badge">🏗️ 입주 준비중</div>
+      <h1>힐스테이트오송역퍼스트<br>보유세 계산기</h1>
+      <p class="desc">아직 공시가격이 발표되지 않은 분양 단지예요.<br>입주 후 공동주택가격이 공시되는 대로<br>자동으로 계산기가 열립니다.</p>
+      <div class="info-card">
+        <div class="info-row"><span class="k">입주 예정</span><span class="v">2027년 2월</span></div>
+        <div class="info-row"><span class="k">위치</span><span class="v">청주 흥덕구 오송읍 오송리</span></div>
+        <div class="info-row"><span class="k">공시가격 공개</span><span class="v">입주 이후</span></div>
+      </div>
+      <a class="btn" href="/tax/">← 다른 단지 보러가기</a>
+    </div>
+    <footer>
+      궁금한 점은 오송미소부동산으로 문의해주세요<br>
+      대표 공인중개사 조상미 · <a href="tel:010.7660.0411">010.7660.0411</a>
+    </footer>
+  </div>
+</body>
+</html>
