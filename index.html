@@ -389,6 +389,36 @@ footer .f-links a:hover{color:var(--rose-deep);}
 .card-listing .thumb img{width:100%;height:100%;object-fit:cover;}
 .card-listing .badge2{position:absolute;top:12px;right:12px;background:var(--gold);color:var(--ink);font-size:10.5px;padding:3px 9px;border-radius:12px;font-weight:700;}
 
+/* ---- 매물 필터 바 ---- */
+.listing-filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;}
+.lf-group{display:flex;gap:6px;flex-wrap:wrap;}
+.lf-btn{padding:8px 16px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);color:var(--ink-soft);font-size:13px;font-weight:700;cursor:pointer;transition:.15s;}
+.lf-btn.active{background:var(--rose-deep);border-color:var(--rose-deep);color:var(--cream);}
+.lf-select{padding:8px 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);color:var(--ink);font-size:13px;font-weight:700;font-family:inherit;}
+
+/* ---- 투어 신청 관리 목록 ---- */
+.tour-item{border:1px solid var(--line);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;font-size:13.5px;background:var(--white);}
+.tour-item .ti-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
+.tour-item .ti-name{font-weight:700;}
+.tour-item .ti-status{font-size:11.5px;padding:3px 10px;border-radius:12px;background:var(--rose-pale);color:var(--rose-deep);font-weight:700;flex:0 0 auto;}
+.tour-item .ti-status.done{background:var(--cream-deep);color:var(--ink-soft);}
+.tour-item .ti-row{color:var(--ink-soft);margin-top:2px;}
+.tour-item .ti-actions{margin-top:10px;display:flex;gap:8px;}
+
+/* ---- 고정 빠른상담 위젯 (PC 전용) ---- */
+.quick-consult-btn{display:none;position:fixed;bottom:26px;right:26px;z-index:70;background:var(--rose-deep);color:var(--cream);padding:14px 22px;border-radius:30px;font-weight:800;font-size:13.5px;box-shadow:0 10px 24px rgba(25,31,40,0.28);align-items:center;gap:8px;}
+@media (min-width:900px){.quick-consult-btn{display:inline-flex;}}
+.quick-consult-panel{display:none;position:fixed;bottom:88px;right:26px;z-index:70;width:300px;max-width:calc(100vw - 40px);background:var(--white);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:20px;}
+.quick-consult-panel.open{display:block;}
+.quick-consult-panel .qc-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.quick-consult-panel .qc-avatar{width:40px;height:40px;border-radius:50%;background:var(--rose-deep);color:var(--cream);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex:0 0 auto;}
+.quick-consult-panel .qc-name{font-weight:700;font-size:14px;}
+.quick-consult-panel .qc-role{font-size:11px;color:var(--ink-soft);margin-top:1px;}
+.quick-consult-panel input,.quick-consult-panel textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;font-family:inherit;font-size:13.5px;background:var(--cream);margin-bottom:8px;box-sizing:border-box;}
+.quick-consult-panel textarea{min-height:70px;resize:vertical;}
+.quick-consult-panel .qc-agree{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--ink-soft);margin-bottom:10px;line-height:1.4;}
+.quick-consult-panel .qc-close{position:absolute;top:10px;right:12px;font-size:18px;color:var(--ink-soft);cursor:pointer;background:none;border:none;line-height:1;}
+
 .listing-modal-overlay{
   display:none;position:fixed;inset:0;background:rgba(25,31,40,0.6);z-index:200;
   align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);
@@ -549,6 +579,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
+      <a href="#tour">투어신청</a>
       <a href="/tax/">보유세 계산기</a>
       <a href="/guarantee/">전세보증보험</a>
       <a href="#blog">블로그</a>
@@ -572,6 +603,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <a href="#about">대표소개</a>
     <a href="#daeum">오송서한이다음</a>
     <a href="#listings">매물</a>
+    <a href="#tour">투어신청</a>
     <a href="/tax/">보유세 계산기</a>
     <a href="/guarantee/">전세보증보험 조회</a>
     <a href="#blog">블로그</a>
@@ -700,6 +732,21 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <section class="section" id="listings">
   <div class="wrap" style="margin-top:30px;">
     <p class="section-sub" style="margin-top:0;">사장님이 직접 등록하신 실제 매물입니다.</p>
+    <div class="listing-filter-bar" id="listingFilterBar">
+      <div class="lf-group">
+        <button type="button" class="lf-btn active" data-deal="all">전체</button>
+        <button type="button" class="lf-btn" data-deal="매매">매매</button>
+        <button type="button" class="lf-btn" data-deal="전세">전세</button>
+        <button type="button" class="lf-btn" data-deal="월세">월세</button>
+      </div>
+      <select id="lfAreaSelect" class="lf-select">
+        <option value="all">면적 전체</option>
+        <option value="0-60">~60㎡</option>
+        <option value="60-85">60~85㎡</option>
+        <option value="85-110">85~110㎡</option>
+        <option value="110-9999">110㎡~</option>
+      </select>
+    </div>
     <a href="listing-register.html" id="listingRegisterBtn" class="btn btn-rose btn-sm" style="display:none;margin-top:14px;">+ 새 매물 등록하기</a>
   </div>
   <div class="scroller" id="liveListingsScroller">
@@ -714,6 +761,47 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <div id="listingModalBody"></div>
   </div>
 </div>
+
+<!-- ===== 매물투어 신청 ===== -->
+<section class="section" id="tour" style="background:var(--cream-deep);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">매물투어 신청</div>
+      <h2>매물, 직접 보고<br>싶으신가요?</h2>
+      <p class="section-sub">원하시는 방문 날짜와 시간을 남겨주시면 대표가 확인 후 방문 일정을 조율해드려요.</p>
+    </div>
+
+    <div class="board-box">
+      <form class="board-form" id="tourForm">
+        <div class="row2">
+          <input type="text" id="t-name" placeholder="이름" required maxlength="20">
+          <input type="text" id="t-phone" placeholder="연락처" required maxlength="20">
+        </div>
+        <div class="row2">
+          <input type="date" id="t-date" required>
+          <select id="t-time" required>
+            <option value="">희망 시간대 선택</option>
+            <option value="오전 (09:00~12:00)">오전 (09:00~12:00)</option>
+            <option value="오후 (12:00~17:00)">오후 (12:00~17:00)</option>
+            <option value="저녁 (17:00~19:00)">저녁 (17:00~19:00)</option>
+            <option value="시간 협의 필요">시간 협의 필요</option>
+          </select>
+        </div>
+        <input type="text" id="t-interest" placeholder="관심 매물/단지 (예: 오송서한이다음노블리스 84㎡ 전세)" maxlength="80">
+        <textarea id="t-memo" placeholder="추가로 전달하고 싶은 내용이 있으면 적어주세요 (선택)" maxlength="500"></textarea>
+        <div class="form-note">* 남겨주신 연락처는 투어 일정 조율 목적으로만 사용됩니다.</div>
+        <div class="submit-row">
+          <button type="submit" class="btn btn-rose btn-sm">투어 신청하기</button>
+        </div>
+      </form>
+
+      <div id="tourAdminWrap" style="display:none;margin-top:26px;border-top:1px dashed var(--line);padding-top:20px;">
+        <div style="font-weight:700;font-size:15px;margin-bottom:14px;">투어 신청 목록 (사장님 모드 전용) <span id="tourCount">0</span>건</div>
+        <div id="tourListWrap"><div class="loading-state">불러오는 중...</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
 
@@ -992,6 +1080,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
+      <a href="#tour">투어신청</a>
       <a href="/tax/">보유세 계산기</a>
       <a href="/guarantee/">전세보증보험 조회</a>
       <a href="#blog">블로그</a>
@@ -1001,6 +1090,26 @@ footer .f-links a:hover{color:var(--rose-deep);}
   </div>
   <div class="wrap" style="margin-top:20px;font-size:11.5px;color:var(--ink-soft);">© 2026 오송 미소공인중개사사무소. All rights reserved.</div>
 </footer>
+
+<!-- ===== 고정 빠른상담 위젯 (PC 전용) ===== -->
+<button type="button" class="quick-consult-btn" id="quickConsultBtn">💬 빠른상담</button>
+<div class="quick-consult-panel" id="quickConsultPanel">
+  <button type="button" class="qc-close" id="quickConsultClose" aria-label="닫기">×</button>
+  <div class="qc-head">
+    <div class="qc-avatar">조</div>
+    <div>
+      <div class="qc-name">조상미 대표 · 공인중개사</div>
+      <div class="qc-role">오송 미소공인중개사사무소</div>
+    </div>
+  </div>
+  <form id="quickConsultForm">
+    <input type="text" id="qcName" placeholder="이름" required maxlength="20">
+    <input type="text" id="qcPhone" placeholder="연락처" required maxlength="20">
+    <textarea id="qcMessage" placeholder="궁금하신 점을 남겨주세요 (매물, 시세, 방문 상담 등)" required maxlength="500"></textarea>
+    <label class="qc-agree"><input type="checkbox" id="qcAgree" required style="width:auto;margin-top:2px;flex:0 0 auto;"> 남겨주신 연락처와 문의 내용은 상담 목적으로만 사용됩니다.</label>
+    <button type="submit" class="btn btn-rose btn-sm" style="width:100%;justify-content:center;">상담 신청하기</button>
+  </form>
+</div>
 
 <div id="toast"></div>
 
@@ -1229,6 +1338,7 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     document.body.classList.remove('admin-mode');
     if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.remove('admin-mode');
     if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'none';
+    if(document.getElementById('tourAdminWrap')) document.getElementById('tourAdminWrap').style.display = 'none';
     showToast('사장님 모드를 종료했어요.');
     renderPosts();
     renderAreaCards();
@@ -1246,6 +1356,10 @@ document.getElementById('adminToggle').addEventListener('click', ()=>{
     document.body.classList.add('admin-mode');
     if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.add('admin-mode');
     if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'inline-flex';
+    if(document.getElementById('tourAdminWrap')){
+      document.getElementById('tourAdminWrap').style.display = 'block';
+      loadTourRequests();
+    }
     showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보·유튜브 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
     renderPosts();
     renderAreaCards();
@@ -2400,6 +2514,7 @@ async function loadBlogPosts(){
 
 /* ===================== 실제 매물 (매물등록 페이지에서 등록한 listings) ===================== */
 let liveListings = [];
+let listingFilters = { deal: 'all', area: 'all' };
 
 const dealTagEmoji = { "매매": "🏢", "전세": "🏠", "월세": "🏬", "단기": "🏘️" };
 
@@ -2410,6 +2525,52 @@ function formatPrice(listing){
     return `보 ${main} / 월 ${monthly}`;
   }
   return `${main}만원`;
+}
+
+function listingAreaMatchesFilter(l){
+  if(listingFilters.area === 'all') return true;
+  const val = parseFloat((l.area && l.area.exclusive) || '');
+  if(isNaN(val)) return false;
+  const [minStr, maxStr] = listingFilters.area.split('-');
+  return val >= Number(minStr) && val < Number(maxStr);
+}
+
+function getFilteredListings(){
+  return liveListings.filter(l => {
+    const dealOk = listingFilters.deal === 'all' || l.dealType === listingFilters.deal;
+    return dealOk && listingAreaMatchesFilter(l);
+  });
+}
+
+function renderLiveListingsList(){
+  const scroller = document.getElementById('liveListingsScroller');
+  if(!scroller) return;
+  if(liveListings.length === 0){
+    scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">등록된 매물이 아직 없습니다.</p>`;
+    return;
+  }
+  const filtered = getFilteredListings();
+  if(filtered.length === 0){
+    scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">조건에 맞는 매물이 없습니다. 필터를 변경해보세요.</p>`;
+    return;
+  }
+  scroller.innerHTML = filtered.map((l) => {
+    const idx = liveListings.indexOf(l);
+    return `
+    <article class="card-listing" data-listing-idx="${idx}">
+      <div class="thumb">
+        <span class="tag">${escapeHtml(l.dealType || '')}</span>
+        ${l.photos && l.photos[0] ? `<img src="${escapeHtml(l.photos[0])}" alt="${escapeHtml(l.complexName||'매물 사진')}">` : (dealTagEmoji[l.dealType] || '🏠')}
+      </div>
+      <div class="body">
+        <div class="price">${formatPrice(l)}</div>
+        <div class="meta">${escapeHtml(l.complexName||'')} · ${escapeHtml((l.area&&l.area.exclusive)||'')}㎡ · ${escapeHtml((l.floor&&l.floor.current)||'')}층</div>
+        <div class="loc">📍 ${escapeHtml(l.featureSummary || '상세보기를 눌러 확인하세요')}</div>
+        <a class="more-link" data-listing-idx="${idx}">상세보기 →</a>
+      </div>
+    </article>
+  `;
+  }).join('');
 }
 
 async function loadListings(){
@@ -2423,25 +2584,21 @@ async function loadListings(){
     scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">매물을 불러오지 못했습니다.</p>`;
     return;
   }
-  if(liveListings.length === 0){
-    scroller.innerHTML = `<p style="padding:0 20px;color:var(--ink-soft);font-size:13.5px;">등록된 매물이 아직 없습니다.</p>`;
-    return;
-  }
-  scroller.innerHTML = liveListings.map((l, idx) => `
-    <article class="card-listing" data-listing-idx="${idx}">
-      <div class="thumb">
-        <span class="tag">${escapeHtml(l.dealType || '')}</span>
-        ${l.photos && l.photos[0] ? `<img src="${escapeHtml(l.photos[0])}" alt="${escapeHtml(l.complexName||'매물 사진')}">` : (dealTagEmoji[l.dealType] || '🏠')}
-      </div>
-      <div class="body">
-        <div class="price">${formatPrice(l)}</div>
-        <div class="meta">${escapeHtml(l.complexName||'')} · ${escapeHtml((l.area&&l.area.exclusive)||'')}㎡ · ${escapeHtml((l.floor&&l.floor.current)||'')}층</div>
-        <div class="loc">📍 ${escapeHtml(l.featureSummary || '상세보기를 눌러 확인하세요')}</div>
-        <a class="more-link" data-listing-idx="${idx}">상세보기 →</a>
-      </div>
-    </article>
-  `).join('');
+  renderLiveListingsList();
 }
+
+document.getElementById('listingFilterBar')?.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.lf-btn');
+  if(!btn) return;
+  listingFilters.deal = btn.getAttribute('data-deal');
+  document.querySelectorAll('#listingFilterBar .lf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLiveListingsList();
+});
+document.getElementById('lfAreaSelect')?.addEventListener('change', (e)=>{
+  listingFilters.area = e.target.value;
+  renderLiveListingsList();
+});
 
 function renderListingModal(l){
   const fee = l.maintenanceFee || {};
@@ -2529,6 +2686,134 @@ loadPosts();
 loadBlogPosts();
 loadListings();
 loadAreaData();
+
+/* ===================== 매물투어 신청 (Firestore 연동, 사장님 모드에서 목록 확인/처리) ===================== */
+document.getElementById('tourForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('t-name').value.trim();
+  const phone = document.getElementById('t-phone').value.trim();
+  const date = document.getElementById('t-date').value;
+  const time = document.getElementById('t-time').value;
+  const interest = document.getElementById('t-interest').value.trim();
+  const memo = document.getElementById('t-memo').value.trim();
+
+  if(!name || !phone || !date || !time){
+    showToast('이름, 연락처, 희망 날짜/시간을 입력해 주세요.');
+    return;
+  }
+
+  try{
+    await db.collection('tour-requests').add({
+      name, phone, date, time, interest, memo,
+      status: '신규',
+      createdAt: new Date().toISOString()
+    });
+    showToast('투어 신청이 접수되었습니다. 확인 후 연락드릴게요!');
+    e.target.reset();
+    if(isAdmin) loadTourRequests();
+  }catch(err){
+    console.error(err);
+    showToast('신청 중 오류가 발생했어요. 전화로 문의해주세요.');
+  }
+});
+
+async function loadTourRequests(){
+  const wrap = document.getElementById('tourListWrap');
+  if(!wrap) return;
+  wrap.innerHTML = `<div class="loading-state">불러오는 중...</div>`;
+  try{
+    const snap = await db.collection('tour-requests').orderBy('createdAt','desc').get();
+    const items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    document.getElementById('tourCount').textContent = items.length;
+    if(items.length === 0){
+      wrap.innerHTML = `<p style="color:var(--ink-soft);font-size:13.5px;">신청 내역이 없습니다.</p>`;
+      return;
+    }
+    wrap.innerHTML = items.map(t => `
+      <div class="tour-item" data-tour-id="${escapeHtml(t.id)}">
+        <div class="ti-top">
+          <span class="ti-name">${escapeHtml(t.name||'')} · ${escapeHtml(t.phone||'')}</span>
+          <span class="ti-status ${t.status==='완료'?'done':''}">${escapeHtml(t.status||'신규')}</span>
+        </div>
+        <div class="ti-row">📅 ${escapeHtml(t.date||'-')} · ${escapeHtml(t.time||'-')}</div>
+        ${t.interest ? `<div class="ti-row">🏠 ${escapeHtml(t.interest)}</div>` : ''}
+        ${t.memo ? `<div class="ti-row">📝 ${escapeHtml(t.memo)}</div>` : ''}
+        <div class="ti-actions">
+          <button type="button" class="btn btn-outline btn-sm" data-tour-done="${escapeHtml(t.id)}">${t.status==='완료' ? '완료 취소' : '완료 처리'}</button>
+          <button type="button" class="btn btn-outline btn-sm" data-tour-del="${escapeHtml(t.id)}" style="color:#E5483D;border-color:#E5483D;">삭제</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){
+    console.error(e);
+    wrap.innerHTML = `<p style="color:var(--ink-soft);font-size:13.5px;">신청 내역을 불러오지 못했습니다.</p>`;
+  }
+}
+
+document.addEventListener('click', async (e)=>{
+  const doneBtn = e.target.closest('[data-tour-done]');
+  if(doneBtn){
+    const id = doneBtn.getAttribute('data-tour-done');
+    try{
+      const doc = await db.collection('tour-requests').doc(id).get();
+      const cur = doc.data() || {};
+      const newStatus = cur.status === '완료' ? '신규' : '완료';
+      await db.collection('tour-requests').doc(id).update({ status: newStatus });
+      loadTourRequests();
+    }catch(err){
+      console.error(err);
+      showToast('처리 중 오류가 발생했어요.');
+    }
+  }
+  const delTourBtn = e.target.closest('[data-tour-del]');
+  if(delTourBtn){
+    const id = delTourBtn.getAttribute('data-tour-del');
+    if(confirm('이 신청 내역을 삭제할까요? 삭제하면 복구할 수 없습니다.')){
+      try{
+        await db.collection('tour-requests').doc(id).delete();
+        showToast('삭제되었습니다.');
+        loadTourRequests();
+      }catch(err){
+        console.error(err);
+        showToast('삭제 중 오류가 발생했어요.');
+      }
+    }
+  }
+});
+
+/* ===================== 고정 빠른상담 위젯 (Firestore 연동) ===================== */
+document.getElementById('quickConsultBtn')?.addEventListener('click', ()=>{
+  document.getElementById('quickConsultPanel').classList.add('open');
+});
+document.getElementById('quickConsultClose')?.addEventListener('click', ()=>{
+  document.getElementById('quickConsultPanel').classList.remove('open');
+});
+document.getElementById('quickConsultForm')?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const name = document.getElementById('qcName').value.trim();
+  const phone = document.getElementById('qcPhone').value.trim();
+  const message = document.getElementById('qcMessage').value.trim();
+  const agree = document.getElementById('qcAgree').checked;
+
+  if(!name || !phone || !message || !agree){
+    showToast('이름, 연락처, 문의 내용을 입력하고 동의에 체크해 주세요.');
+    return;
+  }
+
+  try{
+    await db.collection('quick-consult').add({
+      name, phone, message,
+      status: '신규',
+      createdAt: new Date().toISOString()
+    });
+    showToast('상담 신청이 접수되었습니다. 빠르게 연락드릴게요!');
+    e.target.reset();
+    document.getElementById('quickConsultPanel').classList.remove('open');
+  }catch(err){
+    console.error(err);
+    showToast('신청 중 오류가 발생했어요. 전화로 문의해주세요.');
+  }
+});
 </script>
 </body>
 </html>
