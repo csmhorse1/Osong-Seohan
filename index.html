@@ -84,6 +84,10 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,246,238,0.94);b
 .mm-social a span{font-weight:600;}
 .mm-social .icon-kakao{background:#FEE500;color:#3A1D1D;width:auto;height:auto;border-radius:20px;}
 .mm-social .icon-naver{background:#03C75A;color:#fff;width:auto;height:auto;border-radius:20px;}
+.brand-edit-btn{display:none;width:24px;height:24px;border-radius:50%;background:var(--rose-pale);color:var(--rose-deep);font-size:11px;align-items:center;justify-content:center;flex:0 0 auto;margin-left:2px;cursor:pointer;}
+body.admin-mode .brand-edit-btn{display:inline-flex;}
+.brand-edit-form{display:none;position:absolute;top:100%;left:20px;right:20px;max-width:420px;background:var(--white);border:1px dashed var(--line);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow);z-index:55;margin-top:8px;}
+.brand-edit-form.open{display:block;}
 .burger{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--rose-pale);flex:0 0 auto;}
 .burger span{display:block;width:18px;height:2px;background:var(--rose-deep);position:relative;}
 .burger span::before,.burger span::after{content:'';position:absolute;left:0;width:18px;height:2px;background:var(--rose-deep);}
@@ -101,7 +105,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,246,238,0.94);b
 
 @media (min-width:860px){
   .nav-links{display:flex;}
-  .nav-cta{display:inline-flex;background:var(--rose);color:var(--ink);padding:10px 20px;border-radius:30px;font-size:13.5px;font-weight:800;}
+  .nav-cta{display:inline-flex;background:var(--rose);color:var(--ink);padding:10px 20px;border-radius:30px;font-size:13.5px;font-weight:800;white-space:nowrap;flex-shrink:0;}
   .burger{display:none;}
 }
 
@@ -522,12 +526,25 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <header class="site">
   <div class="nav-bar">
     <a class="brand" href="#top">
-      <span class="pill">오송</span>
+      <span class="pill" id="brandPill">오송</span>
       <span class="name-col">
-        <span class="name">미소공인중개사사무소</span>
-        <span class="tag">MISO REAL ESTATE AGENT OFFICE</span>
+        <span class="name" id="brandName">미소공인중개사사무소</span>
+        <span class="tag" id="brandTag">MISO REAL ESTATE AGENT OFFICE</span>
       </span>
     </a>
+    <button type="button" class="brand-edit-btn" id="brandEditBtn" aria-label="상단 로고 문구 수정">✏️</button>
+    <div class="brand-edit-form" id="brandEditForm">
+      <label>태그(뱃지) 문구</label>
+      <input type="text" id="brandPillInput">
+      <label>업체명</label>
+      <input type="text" id="brandNameInput">
+      <label>영문 슬로건</label>
+      <input type="text" id="brandTagInput">
+      <div class="faq-edit-arow">
+        <button type="button" class="btn btn-outline btn-sm" id="brandEditCancel">취소</button>
+        <button type="button" class="btn btn-rose btn-sm" id="brandEditSave">저장</button>
+      </div>
+    </div>
     <nav class="nav-links">
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
@@ -1783,6 +1800,60 @@ document.getElementById('newsGrid').addEventListener('click', async (e)=>{
     return;
   }
 });
+
+/* ===================== 상단 헤더 로고/문구 - Firestore 연동, 사장님 모드에서 문구 수정 ===================== */
+let brandData = {
+  pill: '오송',
+  name: '미소공인중개사사무소',
+  tag: 'MISO REAL ESTATE AGENT OFFICE'
+};
+const brandDocRef = db.collection('site').doc('brand-data');
+
+async function loadBrandData(){
+  try{
+    const doc = await brandDocRef.get();
+    if(doc.exists){
+      brandData = Object.assign({}, brandData, doc.data());
+    } else {
+      await brandDocRef.set(brandData);
+    }
+  }catch(err){ console.error(err); }
+  renderBrand();
+}
+
+async function saveBrandData(){
+  try{ await brandDocRef.set(brandData); return true; }
+  catch(err){ console.error(err); showToast('저장 중 오류가 발생했어요.'); return false; }
+}
+
+function renderBrand(){
+  document.getElementById('brandPill').textContent = brandData.pill;
+  document.getElementById('brandName').textContent = brandData.name;
+  document.getElementById('brandTag').textContent = brandData.tag;
+  document.title = document.title; // no-op, title stays as-is
+}
+
+document.getElementById('brandEditBtn').addEventListener('click', ()=>{
+  document.getElementById('brandPillInput').value = brandData.pill;
+  document.getElementById('brandNameInput').value = brandData.name;
+  document.getElementById('brandTagInput').value = brandData.tag;
+  document.getElementById('brandEditForm').classList.add('open');
+});
+document.getElementById('brandEditCancel').addEventListener('click', ()=>{
+  document.getElementById('brandEditForm').classList.remove('open');
+});
+document.getElementById('brandEditSave').addEventListener('click', async ()=>{
+  brandData.pill = document.getElementById('brandPillInput').value.trim();
+  brandData.name = document.getElementById('brandNameInput').value.trim();
+  brandData.tag = document.getElementById('brandTagInput').value.trim();
+  const ok = await saveBrandData();
+  if(ok){
+    renderBrand();
+    document.getElementById('brandEditForm').classList.remove('open');
+    showToast('상단 로고 문구가 저장되었습니다.');
+  }
+});
+loadBrandData();
 
 /* ===================== 상단 소개 배너(오송서한이다음 전문부동산) - Firestore 연동, 사장님 모드에서 문구 수정 ===================== */
 let introData = {
