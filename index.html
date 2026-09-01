@@ -70,7 +70,7 @@ header.site{position:sticky;top:0;z-index:50;background:rgba(251,246,238,0.94);b
 .brand .name-col{display:flex;flex-direction:column;line-height:1.25;}
 .brand .name{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);}
 .brand .tag{font-size:9.5px;color:var(--rose-deep);letter-spacing:0.1em;margin-top:1px;font-weight:600;}
-.nav-links{display:none;flex-wrap:nowrap;gap:15px;font-size:13px;font-weight:500;color:var(--ink-soft);}
+.nav-links{display:none;flex-wrap:nowrap;gap:12px;font-size:12.5px;font-weight:500;color:var(--ink-soft);flex-shrink:0;}
 .nav-links a{padding:6px 0;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;}
 .nav-links a:hover{color:var(--rose-deep);border-color:var(--rose);}
 .nav-cta{display:none;}
@@ -579,8 +579,9 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
+      <a href="/recommend/">맞춤추천</a>
       <a href="#tour">투어신청</a>
-      <a href="/tax/">보유세 계산기</a>
+      <a href="/tax/">보유세</a>
       <a href="/guarantee/">전세보증보험</a>
       <a href="#blog">블로그</a>
       <a href="#area">지역정보</a>
@@ -603,6 +604,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <a href="#about">대표소개</a>
     <a href="#daeum">오송서한이다음</a>
     <a href="#listings">매물</a>
+    <a href="/recommend/">맞춤 아파트 추천</a>
     <a href="#tour">투어신청</a>
     <a href="/tax/">보유세 계산기</a>
     <a href="/guarantee/">전세보증보험 조회</a>
@@ -761,6 +763,27 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <div id="listingModalBody"></div>
   </div>
 </div>
+
+<div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
+
+<!-- ===== 나에게 맞는 아파트 추천 ===== -->
+<section class="section" id="recommend" style="background:var(--white);">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">맞춤 매물 찾기</div>
+      <h2>나에게 맞는<br>오송 아파트, 찾아드릴게요</h2>
+      <p class="section-sub">입주시기·예산·가족구성·중요하게 보는 조건만 입력하면, 매일 아침 수집하는 오송읍 14개 단지(민간임대 포함) 실시간 매물 중에서 조건에 맞는 매물을 골라드립니다.</p>
+    </div>
+    <div class="chip-row">
+      <span class="chip">입주시기 · 예산</span>
+      <span class="chip">가족 구성</span>
+      <span class="chip">학군 · 오송역 · 소음 · 상권</span>
+      <span class="chip">향 · 층수</span>
+      <span class="chip">실거주 · 투자</span>
+    </div>
+    <a href="/recommend/" class="btn btn-rose" style="margin-top:24px;">맞춤 매물 추천받기 →</a>
+  </div>
+</section>
 
 <!-- ===== 매물투어 신청 ===== -->
 <section class="section" id="tour" style="background:var(--cream-deep);">
@@ -1080,6 +1103,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
+      <a href="/recommend/">맞춤 아파트 추천</a>
       <a href="#tour">투어신청</a>
       <a href="/tax/">보유세 계산기</a>
       <a href="/guarantee/">전세보증보험 조회</a>

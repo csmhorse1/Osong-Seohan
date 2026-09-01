@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="format-detection" content="telephone=no">
+<title>나에게 맞는 오송 아파트 추천</title>
+<meta name="description" content="입주시기·예산·가족구성·중요항목만 입력하면 오송미소부동산이 매일 아침 수집하는 오송읍 14개 단지 실시간 매물 중에서 조건에 맞는 매물을 찾아드립니다.">
+<meta property="og:title" content="나에게 맞는 오송 아파트 추천">
+<meta property="og:description" content="조건만 입력하면 오송읍 14개 단지 실시간 매물에서 맞춤 매물을 찾아드려요 · 오송미소부동산">
+<style>
+:root{
+  --blue:#1E3A8A; --blue-d:#172554; --blue-dd:#0F172A;
+  --blue-weak:#EFF6FF; --blue-line:#BFDBFE;
+  --fg:#171719; --fg-2:#4E5968; --fg-3:#5B6472;
+  --page:#EAEBEC; --card:#FFFFFF; --surface:#F7F7F8;
+  --fill:rgba(112,115,124,.05); --line:rgba(112,115,124,.16); --line-2:rgba(112,115,124,.22);
+  --green:#0F7B3E; --green-weak:#E7F6EC;
+  --amber:#8A5A00; --amber-weak:#FFF4E0;
+  --red:#D32B22; --red-weak:#FFF0EF;
+  --r-sm:8px; --r:12px; --r-lg:16px; --r-pill:9999px;
+  --font:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--page);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;}
+h1,h2,h3{margin:0;line-height:1.35;font-weight:700;}
+p{margin:0;}
+button{font:inherit;color:inherit;}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+a{color:var(--blue);}
+
+.app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--card);position:relative;display:flex;flex-direction:column;}
+@media (min-width:481px){.app{box-shadow:0 0 0 1px var(--line);}}
+
+.appbar{position:sticky;top:0;z-index:20;background:var(--card);padding-top:env(safe-area-inset-top);border-bottom:1px solid var(--line);}
+.appbar-in{height:54px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;}
+.appbar h1{font-size:16px;font-weight:600;text-align:center;}
+.iconbtn{inline-size:44px;block-size:44px;display:grid;place-items:center;background:none;border:0;cursor:pointer;color:var(--fg);border-radius:var(--r-pill);text-decoration:none;}
+.iconbtn:hover{background:var(--fill);}
+
+.wrap{padding:22px 20px calc(48px + env(safe-area-inset-bottom));}
+.lead{font-size:22px;font-weight:700;letter-spacing:-.03em;margin:6px 0 6px;line-height:1.35;}
+.lead-sub{font-size:13.5px;color:var(--fg-3);margin-bottom:22px;line-height:1.6;}
+.lead-sub b{color:var(--fg-2);}
+
+.sect{font-size:13px;font-weight:600;color:var(--fg-3);margin:26px 0 10px;}
+.sect:first-of-type{margin-top:6px;}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.field label{font-size:13px;font-weight:600;color:var(--fg-2);}
+.control-wrap{position:relative;display:flex;align-items:center;}
+select,input[type=text]{width:100%;min-height:50px;padding:0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);font-size:15px;font-weight:600;color:var(--fg);font-family:inherit;transition:border-color .15s ease,box-shadow .15s ease;}
+select{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:pointer;}
+select:focus,input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-weak);}
+.sel-arrow{position:absolute;right:13px;pointer-events:none;color:var(--fg-3);}
+.suffix{position:absolute;right:14px;font-size:14px;font-weight:600;color:var(--fg-3);pointer-events:none;}
+input[inputmode]{padding-right:44px;text-align:right;}
+.help{font-size:12px;color:var(--fg-3);margin-top:2px;line-height:1.5;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* pill 토글 그룹 */
+.pillset{display:flex;flex-wrap:wrap;gap:8px;}
+.pillset button{border:1px solid var(--line);background:var(--card);border-radius:var(--r-pill);padding:9px 15px;font-size:13.5px;font-weight:600;color:var(--fg-2);cursor:pointer;transition:.12s;}
+.pillset button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff;}
+.pillset.chips button{border-radius:var(--r);padding:10px 13px;}
+.pillset .cnt{font-size:11.5px;color:var(--fg-3);font-weight:600;margin-left:4px;}
+
+.btn{inline-size:100%;min-block-size:54px;border:0;cursor:pointer;border-radius:var(--r);font-size:16px;font-weight:700;background:var(--blue);color:#fff;transition:background .15s ease;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;}
+.btn:hover{background:var(--blue-d);}
+.btn:disabled{background:var(--line-2);color:#fff;cursor:not-allowed;}
+
+#result{display:none;margin-top:10px;}
+#result.on{display:block;animation:fade .3s ease both;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}}
+
+.summary{background:var(--fg);color:#fff;border-radius:var(--r-lg);padding:18px;margin-bottom:16px;}
+.summary .t{font-size:15px;font-weight:700;}
+.summary .t b{color:#FFD666;}
+.summary .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px;}
+.summary .row span{font-size:11.5px;background:rgba(255,255,255,.12);padding:5px 9px;border-radius:var(--r-pill);color:rgba(255,255,255,.9);}
+.summary .upd{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.16);font-size:11.5px;color:rgba(255,255,255,.7);}
+
+.mcard{border:1px solid var(--line);border-radius:var(--r-lg);padding:15px;}
+.mcard+.mcard{margin-top:10px;}
+.mcard .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.mcard .nm{font-size:15px;font-weight:700;}
+.mcard .nm small{display:block;font-size:11.5px;color:var(--fg-3);font-weight:600;margin-top:2px;}
+.deal{display:inline-flex;align-items:center;padding:4px 9px;border-radius:var(--r-pill);font-size:11.5px;font-weight:800;background:var(--blue-weak);color:var(--blue);white-space:nowrap;}
+.deal.전세{background:var(--green-weak);color:var(--green);}
+.deal.월세{background:var(--amber-weak);color:var(--amber);}
+.deal.임대{background:#F0E9FF;color:#6B3FD1;}
+.price{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:10px;}
+.specrow{font-size:12.5px;color:var(--fg-2);margin-top:6px;line-height:1.6;}
+.matchbar{height:7px;border-radius:var(--r-pill);background:var(--fill);margin-top:12px;overflow:hidden;}
+.matchbar i{display:block;height:100%;border-radius:var(--r-pill);background:linear-gradient(90deg,#3B82F6,#1E3A8A);}
+.matchlbl{font-size:11.5px;font-weight:700;color:var(--blue);margin-top:5px;}
+.reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.reasons span{font-size:11px;font-weight:600;background:var(--blue-weak);color:var(--blue-d);padding:4px 8px;border-radius:var(--r-sm);}
+.reasons span.warn{background:var(--amber-weak);color:var(--amber);}
+
+.blockhead{font-size:13px;font-weight:700;color:var(--fg-2);margin:22px 0 10px;display:flex;align-items:center;gap:7px;}
+.blockhead::before{content:"";width:4px;height:14px;border-radius:2px;background:var(--blue);}
+
+.empty{background:var(--surface);border-radius:var(--r-lg);padding:20px 16px;font-size:13px;color:var(--fg-2);line-height:1.65;}
+
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;min-block-size:54px;margin-top:16px;padding:0 16px;background:var(--blue);color:#fff;text-decoration:none;border-radius:var(--r);font-size:16px;font-weight:700;}
+.cta.alt{background:var(--card);color:var(--blue);border:1px solid var(--blue-line);margin-top:10px;}
+
+.notes{margin-top:26px;font-size:11.5px;color:var(--fg-3);}
+.notes h2{font-size:12px;color:var(--fg-2);margin-bottom:8px;}
+.notes ul{margin:0;padding-left:15px;}
+.notes li{margin-bottom:6px;line-height:1.6;}
+
+footer{margin-top:26px;text-align:center;font-size:12.5px;color:var(--fg-3);line-height:1.7;}
+footer .agency{font-weight:700;color:var(--fg-2);}
+footer a{font-weight:700;text-decoration:none;}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="appbar">
+    <div class="appbar-in">
+      <a class="iconbtn" href="/" aria-label="홈으로">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <h1>나에게 맞는 아파트 추천</h1>
+      <span></span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="lead">조건만 알려주세요.<br>맞는 매물을 찾아드릴게요.</p>
+    <p class="lead-sub">오송미소부동산이 <b>매일 아침</b> 수집하는 오송읍 <b>14개 단지 실시간 매물</b> 중에서 입주시기·예산·가족구성·중요항목에 맞는 매물을 찾아 드립니다. (민간임대 단지 포함)</p>
+
+    <form id="form">
+      <p class="sect">1. 어떤 목적이신가요?</p>
+      <div class="pillset" id="purpose" data-single>
+        <button type="button" data-v="실거주" aria-pressed="true">실거주</button>
+        <button type="button" data-v="투자" aria-pressed="false">투자</button>
+      </div>
+
+      <p class="sect">2. 거래 유형</p>
+      <div class="pillset" id="deal" data-single>
+        <button type="button" data-v="매매" aria-pressed="true">매매</button>
+        <button type="button" data-v="전세" aria-pressed="false">전세</button>
+        <button type="button" data-v="월세" aria-pressed="false">월세</button>
+      </div>
+
+      <div id="budgetSale">
+        <p class="sect">3. 예산 (최대)</p>
+        <div class="field">
+          <div class="control-wrap">
+            <input type="text" id="bMain" inputmode="text" placeholder="예: 6억 5000  또는  65000" autocomplete="off">
+            <span class="suffix">만원</span>
+          </div>
+          <div class="help">"6억", "6억5000", "65000" 처럼 편하게 적어주세요.</div>
+        </div>
+      </div>
+      <div id="budgetRent" style="display:none;">
+        <p class="sect">3. 예산 (최대)</p>
+        <div class="two">
+          <div class="field">
+            <label>보증금</label>
+            <div class="control-wrap"><input type="text" id="bDep" inputmode="text" placeholder="예: 1억" autocomplete="off"><span class="suffix">만원</span></div>
+          </div>
+          <div class="field">
+            <label>월세</label>
+            <div class="control-wrap"><input type="text" id="bMon" inputmode="numeric" placeholder="예: 120" autocomplete="off"><span class="suffix">만원</span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="sect">4. 입주 시기</p>
+      <div class="field"><div class="control-wrap">
+        <select id="movein">
+          <option value="즉시">즉시 (한 달 내)</option>
+          <option value="3개월">3개월 이내</option>
+          <option value="6개월">6개월 이내</option>
+          <option value="미정" selected>아직 미정 / 상관없음</option>
+        </select><span class="sel-arrow">▾</span>
+      </div></div>
+
+      <p class="sect">5. 가족 구성</p>
+      <div class="two">
+        <div class="field">
+          <label>가구원 수</label>
+          <div class="control-wrap">
+            <select id="family">
+              <option value="1">1~2인</option>
+              <option value="3">3인</option>
+              <option value="4" selected>4인</option>
+              <option value="5">5인 이상</option>
+            </select><span class="sel-arrow">▾</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>자녀 학령</label>
+          <div class="control-wrap">
+            <select id="child">
+              <option value="none" selected>해당 없음</option>
+              <option value="pre">미취학</option>
+              <option value="elem">초등</option>
+              <option value="mid">중등</option>
+              <option value="high">고등</option>
+            </select><span class="sel-arrow">▾</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="sect">6. 중요하게 보는 것 <span style="font-weight:500;color:var(--fg-3)">(최대 3개)</span></p>
+      <div class="pillset chips" id="priorities" data-max="3">
+        <button type="button" data-v="학군" aria-pressed="false">학군·학원</button>
+        <button type="button" data-v="오송역" aria-pressed="false">오송역 접근성</button>
+        <button type="button" data-v="소음" aria-pressed="false">조용한 환경</button>
+        <button type="button" data-v="상권" aria-pressed="false">상권·편의시설</button>
+        <button type="button" data-v="커뮤니티" aria-pressed="false">커뮤니티 시설</button>
+        <button type="button" data-v="향" aria-pressed="false">채광·향</button>
+        <button type="button" data-v="층수" aria-pressed="false">층수</button>
+      </div>
+
+      <p class="sect">7. 선호하는 향 <span style="font-weight:500;color:var(--fg-3)">(복수 선택 가능)</span></p>
+      <div class="pillset chips" id="dirs">
+        <button type="button" data-v="남향" aria-pressed="false">남향</button>
+        <button type="button" data-v="남동향" aria-pressed="false">남동향</button>
+        <button type="button" data-v="남서향" aria-pressed="false">남서향</button>
+        <button type="button" data-v="동향" aria-pressed="false">동향</button>
+        <button type="button" data-v="서향" aria-pressed="false">서향</button>
+        <button type="button" data-v="북향" aria-pressed="false">북향</button>
+      </div>
+
+      <p class="sect">8. 선호하는 층</p>
+      <div class="pillset" id="floorpref" data-single>
+        <button type="button" data-v="무관" aria-pressed="true">무관</button>
+        <button type="button" data-v="저" aria-pressed="false">저층</button>
+        <button type="button" data-v="중" aria-pressed="false">중층</button>
+        <button type="button" data-v="고" aria-pressed="false">고층</button>
+      </div>
+
+      <button type="submit" class="btn" id="go">나에게 맞는 매물 찾기</button>
+    </form>
+
+    <section id="result" aria-live="polite"></section>
+
+    <div class="notes">
+      <h2>안내</h2>
+      <ul>
+        <li>매물 정보는 오송미소부동산이 네이버부동산에서 매일 아침 수집한 것으로, 실제 거래 가능 여부·가격은 <strong>중개사무소 확인이 필요</strong>합니다.</li>
+        <li>임대(민간임대) 단지는 보증금·월세가 수시로 바뀌어 단지 안내만 제공하며, 정확한 조건은 문의해 주세요.</li>
+        <li>추천 순위는 입력하신 조건에 대한 참고용 점수이며, 실제 상담을 대신하지 않습니다.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <p class="agency">오송미소부동산 · 미소공인중개사사무소</p>
+      <p>충북 청주시 흥덕구 오송읍 오송생명14로 217, 서한이다음노블리스 단지내 상가 1동 102호<br>
+      중개등록 제43113-2023-00163호 · 대표 조상미</p>
+      <p><a href="tel:0432335949">043-233-5949</a> · <a href="tel:01076600411">010-7660-0411</a></p>
+    </footer>
+  </main>
+</div>
+
+<script>
+/* ============================================================================
+ *  나에게 맞는 아파트 추천 — 오송미소부동산
+ *
+ *  [데이터 연결]  매일 아침 구글시트 "매물현황"(마스터 탭)에 쌓이는 14개 단지
+ *  매물을 gviz JSON으로 실시간으로 읽어옵니다.
+ *  ▶ 소장님: 이 페이지가 매물을 못 불러오면 아래 두 가지를 확인하세요.
+ *    1) 구글시트 우측 상단 [공유] → "링크가 있는 모든 사용자" → 권한 "뷰어" 로 설정
+ *    2) 아래 SHEET_ID 가 실제 시트 ID와 같은지 확인
+ * ==========================================================================*/
+var SHEET_ID = "1-n7cjS35dl9zxEcGQrdJk04YZm6XkUn57KREkdiF0mg";
+var MASTER_TAB = "매물현황";
+
+/* ============================================================================
+ *  [단지별 정성 점수]  ★ 소장님 검수용 초안입니다 ★
+ *  아래 숫자(1~5)만 고치면 추천 결과가 바뀝니다.  1=아쉬움 ~ 5=매우 우수
+ *    학군   : 초·중·고 및 학원가 접근
+ *    오송역 : KTX 오송역까지의 접근성(도보/차량)
+ *    소음   : 조용한 정도 (높을수록 조용함)
+ *    상권   : 상가·마트·편의시설
+ *    커뮤니티: 단지 커뮤니티 시설 수준
+ *  name  : 구글시트 "단지명" 과 정확히 같게. aliases 에 다른 표기를 넣으면 같이 인식.
+ *  rental:true 인 단지는 매물이 아니라 "이런 조건이면 임대도 고려" 카드로만 노출됩니다.
+ * ==========================================================================*/
+var COMPLEX_PROFILES = [
+  { name:"오송역서한이다음노블리스", aliases:["서한이다음노블리스","오송서한이다음노블리스"],
+    year:2021, households:1113, area:"봉산리",
+    schools:"솔밭초·오송중 인근", directionsCommon:["남향","남동향","남서향"],
+    s:{학군:4, 오송역:5, 소음:3, 상권:4, 커뮤니티:4},
+    note:"단지 내 상가에 미소부동산이 직접 입점. 오송역 도보권 대단지." },
+
+  { name:"오송역동아라이크텐", aliases:["동아라이크텐","오송동아라이크텐"],
+    year:2018, households:970, area:"연제리",
+    schools:"초·중학교 도보권", directionsCommon:["남향"],
+    s:{학군:4, 오송역:3, 소음:4, 상권:3, 커뮤니티:3},
+    note:"학교 가까운 조용한 실거주 단지. 오송역은 차량 이동 권장." },
+
+  { name:"오송파라곤센트럴시티1단지", aliases:["오송파라곤센트럴시티1차","파라곤센트럴시티1단지","오송파라곤1단지"],
+    year:2020, households:2415, area:"봉산리",
+    schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향","남서향"],
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    note:"오송역 서편 초대단지. 파라곤 상업지구·커뮤니티 인프라 우수." },
+
+  { name:"오송파라곤센트럴시티2단지", tag:"민간임대",
+    aliases:["오송역파라곤센트럴시티2차","오송역파라곤센트럴시티2차(민간임대)","파라곤센트럴시티2단지","오송파라곤2단지"],
+    year:2024, households:1673, area:"봉산리",
+    schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향"],
+    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4},
+    note:"민간임대. 파라곤 상업지구 생활권. 8년 거주 후 분양전환형." },
+
+  { name:"오송파라곤센트럴시티3단지", tag:"민간임대",
+    aliases:["오송역파라곤센트럴시티3차","오송역파라곤센트럴시티3차(민간임대)","파라곤센트럴시티3단지","오송파라곤3단지"],
+    year:2024, households:1500, area:"봉산리",
+    schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향"],
+    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4},
+    note:"민간임대. 파라곤 생활권, 비교적 신축." },
+
+  { name:"오송대광로제비앙1차", tag:"민간임대",
+    aliases:["오송역대광로제비앙","오송역대광로제비앙(민간임대)","오송역대광로제비앙1차","대광로제비앙1차","오송대광1차"],
+    year:2023, households:830, area:"봉산리",
+    schools:"봉산리 학군", directionsCommon:["남향","남동향"],
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    note:"민간임대. 보증금·월세 조건은 수시 변동 — 문의 필요." },
+
+  { name:"오송대광로제비앙2차", tag:"민간임대",
+    aliases:["오송역대광로제비앙그랜드센텀","오송역대광로제비앙그랜드센텀(민간임대)","대광로제비앙그랜드센텀","그랜드센텀","대광로제비앙2차","오송대광2차"],
+    year:2024, households:1615, area:"봉산리",
+    schools:"봉산리 학군", directionsCommon:["남향","남동향","남서향"],
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    note:"민간임대 대단지(1,615세대). 8년 거주 후 분양전환형." },
+
+  { name:"힐스테이트오송역퍼스트", aliases:["힐스테이트오송역","오송역힐스테이트퍼스트"],
+    year:2026, households:1116, area:"봉산리(오송역 인접)",
+    schools:"신설 학군", directionsCommon:["남향","남동향","남서향"],
+    s:{학군:3, 오송역:5, 소음:2, 상권:4, 커뮤니티:4},
+    note:"오송역 바로 앞 신축. 역 접근성 최고, 다만 역세권 소음은 감안 필요." },
+
+  { name:"오송힐데스하임", aliases:["힐데스하임","오송힐데스하임아파트"],
+    year:2020, households:400, area:"만수리",
+    schools:"인근 초등학교", directionsCommon:["남향"],
+    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:3},
+    note:"조용한 소단지. 오송역·상권은 차량 이동 필요." },
+
+  { name:"오송대원칸타빌", aliases:["대원칸타빌","오송대원칸타빌아파트"],
+    year:2010, households:600, area:"오송읍(구 오송)",
+    schools:"오송초·오송중", directionsCommon:["남향","남동향"],
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    note:"구 오송 생활권 실거주 단지. 가격 부담이 낮은 편, 오송역은 차량 이동." },
+
+  { name:"오송상록롯데캐슬", aliases:["상록롯데캐슬","오송상록"],
+    year:2008, households:700, area:"오송읍(구 오송)",
+    schools:"오송초·오송중", directionsCommon:["남향","남동향"],
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    note:"구 오송 대장 단지 중 하나. 학교 도보권, 생활 편의 무난." },
+
+  { name:"오송경남아너스빌", aliases:["경남아너스빌","오송경남"],
+    year:2008, households:600, area:"오송읍(구 오송)",
+    schools:"오송초·오송중", directionsCommon:["남향"],
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    note:"구 오송 생활권. 조용하고 실수요 위주." },
+
+  { name:"오송모아미래도", aliases:["모아미래도","오송모아"],
+    year:2007, households:500, area:"오송읍(구 오송)",
+    schools:"오송초·오송중", directionsCommon:["남향"],
+    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:2},
+    note:"구 오송 구축 단지. 가격 진입장벽이 가장 낮은 편." },
+
+  { name:"오송호반베르디움", aliases:["호반베르디움","오송호반"],
+    year:2019, households:700, area:"오송읍",
+    schools:"인근 초·중학교", directionsCommon:["남향","남동향"],
+    s:{학군:3, 오송역:3, 소음:4, 상권:3, 커뮤니티:3},
+    note:"구 오송권 중 비교적 신축. 조용한 실거주 선호 단지." },
+];
+/* 참고: 소장님이 말한 "임대 4단지"(오송역대광로제비앙·그랜드센텀·파라곤센트럴시티2차·3차)는
+   위 목록의 오송대광로제비앙1차/2차, 오송파라곤센트럴시티2단지/3단지와 같은 단지다
+   (네이버부동산이 분양/민간임대를 한 페이지로 묶음). tag:"민간임대"로 표시된다. */
+
+/* 가족 구성원 수 → 적정 전용면적(㎡) */
+var AREA_TARGET = {
+  "1": { min:36, ideal:52, max:66 },
+  "3": { min:55, ideal:74, max:92 },
+  "4": { min:72, ideal:92, max:118 },
+  "5": { min:98, ideal:120, max:170 },
+};
+
+/* ---------- 유틸 ---------- */
+function won(str){
+  // "6억5000", "6억 5,000", "65000", "1억" → 만원 단위 숫자
+  if(str==null) return NaN;
+  str = String(str).replace(/,/g,"").replace(/\s|만원|원/g,"").trim();
+  if(!str) return NaN;
+  var m = str.match(/^(\d+(?:\.\d+)?)억(\d+)?$/);
+  if(m) return Math.round(parseFloat(m[1])*10000) + (m[2]?parseInt(m[2],10):0);
+  if(/^\d+$/.test(str)){
+    var n = parseInt(str,10);
+    // 3자리 이하면 '억'으로 해석 (예: 6 → 6억), 아니면 만원으로
+    return n<=999 ? n*10000 : n;
+  }
+  return NaN;
+}
+function fmtWon(manwon){
+  if(!isFinite(manwon)) return "-";
+  var eok = Math.floor(manwon/10000), rest = Math.round(manwon%10000);
+  if(eok>0) return rest>0 ? eok+"억 "+rest.toLocaleString() : eok+"억";
+  return rest.toLocaleString()+"만";
+}
+function parsePriceField(dealType, priceStr, rawText){
+  // 반환: { sale: 만원 } | { deposit, monthly }
+  var p = String(priceStr||"").trim();
+  if(dealType==="월세"){
+    var mm = String(rawText||"").match(/월세\s*([\d,]+억?[\d,]*)\s*\/\s*([\d,]+)/);
+    if(mm) return { deposit: won(mm[1]), monthly: parseInt(mm[2].replace(/,/g,""),10) };
+    return { deposit: won(p), monthly: NaN };
+  }
+  return { sale: won(p) };
+}
+function floorBand(floorStr, totalFallback){
+  var s = String(floorStr||"");
+  if(/저/.test(s)) return "저";
+  if(/중/.test(s)) return "중";
+  if(/고/.test(s)) return "고";
+  var m = s.match(/(\d+)\s*\/\s*(\d+)/);
+  if(m){
+    var cur=+m[1], tot=+m[2]||totalFallback||25;
+    if(cur<=tot/3) return "저";
+    if(cur<=tot*2/3) return "중";
+    return "고";
+  }
+  return "";
+}
+function profileFor(complexName){
+  var n = String(complexName||"").replace(/\s/g,"");
+  for(var i=0;i<COMPLEX_PROFILES.length;i++){
+    var pf = COMPLEX_PROFILES[i];
+    if(pf.name.replace(/\s/g,"")===n) return pf;
+    if((pf.aliases||[]).some(function(a){return a.replace(/\s/g,"")===n;})) return pf;
+  }
+  // 느슨한 포함 매칭
+  for(var j=0;j<COMPLEX_PROFILES.length;j++){
+    var p2 = COMPLEX_PROFILES[j];
+    if(p2.rental) continue;
+    if(n.indexOf(p2.name.replace(/\s/g,"").slice(0,6))>=0) return p2;
+  }
+  return null;
+}
+var DEFAULT_PROFILE = { s:{학군:3,오송역:3,소음:3,상권:3,커뮤니티:3}, note:"", directionsCommon:[] };
+
+/* ---------- pill 토글 동작 ---------- */
+function setupPillset(id){
+  var box = document.getElementById(id);
+  var single = box.hasAttribute("data-single");
+  var max = parseInt(box.getAttribute("data-max")||"0",10);
+  box.addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    var on = b.getAttribute("aria-pressed")==="true";
+    if(single){
+      box.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true");
+    } else {
+      if(!on && max){
+        var cnt = box.querySelectorAll('button[aria-pressed=true]').length;
+        if(cnt>=max){ return; }
+      }
+      b.setAttribute("aria-pressed", on ? "false":"true");
+    }
+    if(id==="deal") syncBudgetFields();
+  });
+}
+function pillVal(id){ var b=document.querySelector("#"+id+" button[aria-pressed=true]"); return b?b.getAttribute("data-v"):null; }
+function pillVals(id){ return [].map.call(document.querySelectorAll("#"+id+" button[aria-pressed=true]"), function(b){return b.getAttribute("data-v");}); }
+
+["purpose","deal","priorities","dirs","floorpref"].forEach(setupPillset);
+
+function syncBudgetFields(){
+  var d = pillVal("deal");
+  document.getElementById("budgetSale").style.display = (d==="월세") ? "none":"block";
+  document.getElementById("budgetRent").style.display = (d==="월세") ? "block":"none";
+}
+syncBudgetFields();
+
+/* ---------- 시트 로딩 ---------- */
+var LISTINGS = null;
+function loadListings(){
+  var url = "https://docs.google.com/spreadsheets/d/"+SHEET_ID+"/gviz/tq?tqx=out:json&headers=1&sheet="+encodeURIComponent(MASTER_TAB);
+  return fetch(url, { cache:"no-store" }).then(function(r){
+    if(!r.ok) throw new Error("http "+r.status);
+    return r.text();
+  }).then(function(txt){
+    var s = txt.indexOf("{"), e = txt.lastIndexOf("}");
+    var data = JSON.parse(txt.slice(s, e+1));
+    var cols = data.table.cols.map(function(c){return (c.label||"").trim();});
+    function idx(name){ return cols.indexOf(name); }
+    var I = {
+      status:idx("상태"), dong:idx("동"), deal:idx("거래유형"), price:idx("가격"),
+      supply:idx("공급면적"), excl:idx("전용면적"), floor:idx("층"), dir:idx("방향"),
+      cdate:idx("확인일자"), agency:idx("부동산"), raw:idx("원문"), complex:idx("단지명"),
+    };
+    var rows = data.table.rows.map(function(row){
+      var c = row.c || [];
+      function g(i){ return (i>=0 && c[i]) ? (c[i].v==null?"":String(c[i].v)) : ""; }
+      return {
+        status:g(I.status), dong:g(I.dong), dealType:g(I.deal), price:g(I.price),
+        supplyArea:g(I.supply), exclusiveArea:g(I.excl), floor:g(I.floor), direction:g(I.dir),
+        confirmedDate:g(I.cdate), agency:g(I.agency), rawText:g(I.raw), complexName:g(I.complex),
+      };
+    }).filter(function(l){ return l.dealType && l.status!=="거래완료"; });
+    return rows;
+  });
+}
+
+/* ---------- 확인일자 → Date ---------- */
+function parseConfirmed(s){
+  var m = String(s||"").match(/(\d{2})\.(\d{2})\.(\d{2})/);
+  if(!m) return null;
+  return new Date(2000+ +m[1], +m[2]-1, +m[3]);
+}
+
+/* ---------- 매물 점수 ---------- */
+function scoreListing(l, q, medians){
+  var pf = profileFor(l.complexName) || DEFAULT_PROFILE;
+  var reasons = [], warns = [];
+  var score = 42;
+
+  /* 예산 */
+  var pr = parsePriceField(l.dealType, l.price, l.rawText);
+  if(q.deal==="월세"){
+    if(!isFinite(pr.deposit)) return null;
+    if(isFinite(q.dep)){
+      if(pr.deposit<=q.dep){ score+=14; }
+      else if(pr.deposit<=q.dep*1.15){ score+=4; warns.push("보증금 약간 초과"); }
+      else return null;
+    }
+    if(isFinite(q.mon) && isFinite(pr.monthly)){
+      if(pr.monthly<=q.mon){ score+=12; reasons.push("월세 "+pr.monthly+"만"); }
+      else if(pr.monthly<=q.mon*1.15){ score+=3; warns.push("월세 약간 초과"); }
+      else return null;
+    }
+  } else {
+    if(!isFinite(pr.sale)) return null;
+    if(isFinite(q.budget)){
+      if(pr.sale<=q.budget){ score+=20; reasons.push("예산 안에 있음"); }
+      else if(pr.sale<=q.budget*1.10){ score+=6; warns.push("예산 10% 이내 초과"); }
+      else return null;
+    }
+  }
+
+  /* 면적 (가족 구성) */
+  var ex = parseFloat(l.exclusiveArea);
+  var tgt = AREA_TARGET[q.family] || AREA_TARGET["4"];
+  if(isFinite(ex)){
+    if(ex>=tgt.min && ex<=tgt.max){
+      var d = Math.abs(ex-tgt.ideal)/(tgt.max-tgt.min);
+      score += 18*(1-Math.min(d,1));
+      reasons.push(q.familyLabel+" 가족에 맞는 "+Math.round(ex)+"㎡");
+    } else if(ex<tgt.min){ score+=2; warns.push("가족 수 대비 좁을 수 있음"); }
+    else { score+=6; warns.push("가족 수 대비 넓음(관리비↑)"); }
+  }
+
+  /* 향 */
+  if(q.dirs.length){
+    if(q.dirs.indexOf(l.direction)>=0){ score+=12; reasons.push(l.direction); }
+    else { score-=4; }
+  } else {
+    if(["남향","남동향","남서향"].indexOf(l.direction)>=0){ score+=6; reasons.push(l.direction); }
+  }
+
+  /* 층 */
+  var fb = floorBand(l.floor);
+  if(q.floor!=="무관"){
+    if(fb===q.floor){ score+=10; reasons.push({저:"저층",중:"중층",고:"고층"}[fb]); }
+    else if(fb){ score-=2; }
+  } else if(fb==="중"||fb==="고"){ score+=3; }
+
+  /* 단지 정성 점수 × 중요항목 우선순위 */
+  var pri = q.priorities;
+  if(pri.length){
+    pri.forEach(function(p){
+      var v = (p==="향"||p==="층수") ? 3 : (pf.s[p]||3);
+      score += (v-3)*5;            // 5점 → +10, 1점 → -10
+      if(v>=4){
+        var lbl = {학군:"학군 우수",오송역:"오송역 접근성 우수",소음:"조용한 편",상권:"상권 편리",커뮤니티:"커뮤니티 우수"}[p];
+        if(lbl) reasons.push(lbl+"(★"+v+")");
+      }
+    });
+  } else {
+    var avg = (pf.s.학군+pf.s.오송역+pf.s.소음+pf.s.상권+pf.s.커뮤니티)/5;
+    score += (avg-3)*6;
+  }
+
+  /* 자녀 학령 → 학군 가중 */
+  if(q.child!=="none"){
+    var sv = pf.s.학군||3;
+    score += (sv-3)*4;
+    if(sv>=4 && reasons.indexOf("학군 우수(★"+sv+")")<0) reasons.push("자녀 학군 양호");
+  }
+
+  /* 목적별 보정 */
+  if(q.purpose==="투자"){
+    var med = medians[l.complexName+"|"+l.dealType];
+    if(isFinite(med) && (pr.sale||pr.deposit) < med){ score+=10; reasons.push("같은 단지 시세보다 낮음"); }
+    if(isFinite(ex) && ex<60){ score+=6; reasons.push("소형 평형(임대 회전 유리)"); }
+    // 투자에서는 향/층/커뮤니티 비중을 낮춤 (위에서 이미 반영된 값 일부 상쇄)
+    score -= 4;
+  } else {
+    if((pf.s.소음||3)>=4) score+=3;
+    if((pf.s.커뮤니티||3)>=4) score+=2;
+  }
+
+  /* 최신 매물 */
+  var cd = parseConfirmed(l.confirmedDate);
+  if(cd){
+    var days = (Date.now()-cd.getTime())/864e5;
+    if(days<=10){ score+=5; reasons.push("최근 확인 매물"); }
+    else if(days>60){ score-=3; }
+  }
+
+  /* 입주시기(참고) */
+  if(q.movein==="즉시" && (l.dealType==="전세"||l.dealType==="월세")) score+=3;
+
+  return {
+    listing:l, profile:pf, score:Math.max(0,Math.min(100,Math.round(score))),
+    price:pr, reasons:reasons.slice(0,5), warns:warns.slice(0,2), ex:ex, fb:fb,
+  };
+}
+
+function computeMedians(rows){
+  var groups = {};
+  rows.forEach(function(l){
+    var pr = parsePriceField(l.dealType, l.price, l.rawText);
+    var v = pr.sale || pr.deposit;
+    if(!isFinite(v)) return;
+    var k = l.complexName+"|"+l.dealType;
+    (groups[k]=groups[k]||[]).push(v);
+  });
+  var med = {};
+  Object.keys(groups).forEach(function(k){
+    var a = groups[k].sort(function(x,y){return x-y;});
+    med[k] = a[Math.floor(a.length/2)];
+  });
+  return med;
+}
+
+/* ---------- 렌더 ---------- */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+function listingPriceText(dealType, pr){
+  if(dealType==="월세") return "보증 "+fmtWon(pr.deposit)+(isFinite(pr.monthly)?" / 월 "+pr.monthly+"만":"");
+  return fmtWon(pr.sale);
+}
+
+function renderResult(matched, q, meta){
+  var el = document.getElementById("result");
+  var crit = [];
+  crit.push(q.purpose); crit.push(q.deal);
+  if(q.deal==="월세"){ if(isFinite(q.dep)) crit.push("보증 "+fmtWon(q.dep)+" 이내"); if(isFinite(q.mon)) crit.push("월세 "+q.mon+"만 이내"); }
+  else if(isFinite(q.budget)) crit.push(fmtWon(q.budget)+" 이내");
+  crit.push(q.familyLabel+" 가족");
+  if(q.child!=="none") crit.push({pre:"미취학",elem:"초등",mid:"중등",high:"고등"}[q.child]+" 자녀");
+  q.priorities.forEach(function(p){ crit.push("#"+p); });
+  if(q.dirs.length) crit.push(q.dirs.join("·"));
+  if(q.floor!=="무관") crit.push({저:"저층",중:"중층",고:"고층"}[q.floor]);
+
+  var html = "";
+  html += '<div class="summary">';
+  html += '<div class="t">조건에 맞는 매물 <b>'+matched.length+'건</b>을 찾았어요</div>';
+  html += '<div class="row">'+crit.map(function(c){return "<span>"+esc(c)+"</span>";}).join("")+'</div>';
+  html += '<div class="upd">'+esc(meta)+'</div>';
+  html += '</div>';
+
+  if(matched.length===0){
+    html += '<div class="empty">입력하신 조건에 딱 맞는 매물이 지금은 없어요.<br>예산을 조금 넓히거나 향·층 조건을 완화해 보세요. 원하시면 조건을 남겨주시면 매물이 나올 때 먼저 연락드릴게요.</div>';
+  }
+
+  matched.slice(0,10).forEach(function(r){
+    var l = r.listing;
+    html += '<div class="mcard">';
+    html += '<div class="top"><div class="nm">'+esc(l.complexName)+
+            ((r.profile&&r.profile.tag)?' <span class="deal 임대" style="font-size:10.5px;padding:2px 7px;vertical-align:middle;">'+esc(r.profile.tag)+'</span>':'')+
+            ' <small>'+esc(l.dong||"")+(l.agency?' · '+esc(l.agency):'')+'</small></div>';
+    html += '<span class="deal '+esc(l.dealType)+'">'+esc(l.dealType)+'</span></div>';
+    html += '<div class="price">'+esc(listingPriceText(l.dealType, r.price))+'</div>';
+    html += '<div class="specrow">전용 '+(isFinite(r.ex)?Math.round(r.ex)+"㎡":(l.exclusiveArea||"-"))+
+            (l.supplyArea?' (공급 '+esc(l.supplyArea)+'㎡)':'')+
+            ' · '+esc(l.floor||"-")+' · '+esc(l.direction||"향 정보 없음")+
+            (l.confirmedDate?' · 확인 '+esc(l.confirmedDate):'')+'</div>';
+    html += '<div class="matchbar"><i style="width:'+r.score+'%"></i></div>';
+    html += '<div class="matchlbl">적합도 '+r.score+'점</div>';
+    var tags = r.reasons.map(function(x){return '<span>'+esc(x)+'</span>';})
+              .concat(r.warns.map(function(x){return '<span class="warn">'+esc(x)+'</span>';}));
+    if(tags.length) html += '<div class="reasons">'+tags.join("")+'</div>';
+    html += '</div>';
+  });
+
+
+  html += '<a class="cta" href="/#tour">이 조건으로 매물 상담 신청하기</a>';
+  html += '<a class="cta alt" href="tel:01076600411">전화로 바로 문의 · 010-7660-0411</a>';
+
+  el.innerHTML = html;
+  el.classList.add("on");
+  el.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ---------- 제출 ---------- */
+var LAST_META = "";
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+  var btn = document.getElementById("go");
+  var famSel = document.getElementById("family");
+  var q = {
+    purpose: pillVal("purpose"),
+    deal: pillVal("deal"),
+    budget: won(document.getElementById("bMain").value),
+    dep: won(document.getElementById("bDep").value),
+    mon: parseInt(String(document.getElementById("bMon").value).replace(/[^\d]/g,""),10),
+    movein: document.getElementById("movein").value,
+    family: famSel.value,
+    familyLabel: famSel.options[famSel.selectedIndex].text,
+    child: document.getElementById("child").value,
+    priorities: pillVals("priorities"),
+    dirs: pillVals("dirs"),
+    floor: pillVal("floorpref"),
+  };
+  try{ localStorage.setItem("osong_reco", JSON.stringify(q)); }catch(_){}
+
+  btn.disabled = true; btn.textContent = "매물을 불러오는 중…";
+
+  var task = LISTINGS ? Promise.resolve(LISTINGS) : loadListings();
+  task.then(function(rows){
+    LISTINGS = rows;
+    var medians = computeMedians(rows);
+    var pool = rows.filter(function(l){ return l.dealType===q.deal; });
+    var scored = [];
+    pool.forEach(function(l){ var r = scoreListing(l, q, medians); if(r) scored.push(r); });
+    scored.sort(function(a,b){ return b.score-a.score; });
+
+    var dates = rows.map(function(l){return parseConfirmed(l.confirmedDate);}).filter(Boolean);
+    var newest = dates.length ? new Date(Math.max.apply(null,dates.map(function(d){return d.getTime();}))) : null;
+    LAST_META = "오송읍 "+new Set(rows.map(function(l){return l.complexName;})).size+"개 단지 · 활성 매물 "+rows.length+"건 기준"+
+                (newest? " (최근 확인 "+ (newest.getMonth()+1) + "/" + newest.getDate() + ")":"");
+
+    renderResult(scored, q, LAST_META);
+    btn.disabled = false; btn.textContent = "조건 바꿔서 다시 찾기";
+  }).catch(function(err){
+    console.error(err);
+    document.getElementById("result").innerHTML =
+      '<div class="empty">지금 매물 정보를 불러오지 못했어요. 잠시 후 다시 시도하시거나, '+
+      '<a href="tel:01076600411">010-7660-0411</a> 로 문의해 주세요.</div>';
+    document.getElementById("result").classList.add("on");
+    btn.disabled = false; btn.textContent = "다시 시도";
+  });
+});
+
+/* 지난 입력 복원 */
+(function(){
+  try{
+    var q = JSON.parse(localStorage.getItem("osong_reco")||"null");
+    if(!q) return;
+    function press(id,val){ var b=document.querySelector('#'+id+' button[data-v="'+val+'"]'); if(b){ b.closest('.pillset').querySelectorAll('button').forEach(function(x){ if(document.getElementById(id).hasAttribute('data-single')) x.setAttribute('aria-pressed','false'); }); b.setAttribute('aria-pressed','true'); } }
+    if(q.purpose) press("purpose",q.purpose);
+    if(q.deal) press("deal",q.deal);
+    if(q.floor) press("floorpref",q.floor);
+    (q.priorities||[]).forEach(function(v){ press("priorities",v); });
+    (q.dirs||[]).forEach(function(v){ press("dirs",v); });
+    if(q.movein) document.getElementById("movein").value=q.movein;
+    if(q.family) document.getElementById("family").value=q.family;
+    if(q.child) document.getElementById("child").value=q.child;
+    if(isFinite(q.budget)) document.getElementById("bMain").value = q.budget;
+    if(isFinite(q.dep)) document.getElementById("bDep").value = q.dep;
+    if(isFinite(q.mon)) document.getElementById("bMon").value = q.mon;
+    syncBudgetFields();
+  }catch(_){}
+})();
+
+/* 매물 미리 로딩 (첫 제출 체감 속도) */
+loadListings().then(function(r){ LISTINGS = r; }).catch(function(){});
+</script>
+</body>
+</html>
