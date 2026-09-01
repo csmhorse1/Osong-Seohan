@@ -665,18 +665,27 @@ function renderResult(matched, q, meta){
   if(q.dirs.length) crit.push(q.dirs.join("·"));
   if(q.floor!=="무관") crit.push({저:"저층",중:"중층",고:"고층"}[q.floor]);
 
+  var SHOW = 12;
+  var good = matched.filter(function(r){ return r.score>=72; }).length;
+  var shown = Math.min(matched.length, SHOW);
+
   var html = "";
   html += '<div class="summary">';
-  html += '<div class="t">조건에 맞는 매물 <b>'+matched.length+'건</b>을 찾았어요</div>';
+  if(matched.length===0){
+    html += '<div class="t">조건에 맞는 매물이 지금은 없어요</div>';
+  } else {
+    html += '<div class="t">예산·가족 조건을 통과한 매물 <b>'+matched.length.toLocaleString()+'건</b>' +
+            (good>0? ' 중 잘 맞는 '+Math.min(good,shown)+'건' : ' 중 상위 '+shown+'건') + '을 골라드렸어요</div>';
+  }
   html += '<div class="row">'+crit.map(function(c){return "<span>"+esc(c)+"</span>";}).join("")+'</div>';
   html += '<div class="upd">'+esc(meta)+'</div>';
   html += '</div>';
 
   if(matched.length===0){
-    html += '<div class="empty">입력하신 조건에 딱 맞는 매물이 지금은 없어요.<br>예산을 조금 넓히거나 향·층 조건을 완화해 보세요. 원하시면 조건을 남겨주시면 매물이 나올 때 먼저 연락드릴게요.</div>';
+    html += '<div class="empty">예산을 조금 넓히거나 향·층 조건을 완화해 보세요. 원하시면 조건을 남겨주시면 매물이 나올 때 먼저 연락드릴게요.</div>';
   }
 
-  matched.slice(0,10).forEach(function(r){
+  matched.slice(0,SHOW).forEach(function(r){
     var l = r.listing;
     html += '<div class="mcard">';
     html += '<div class="top"><div class="nm">'+esc(l.complexName)+
@@ -737,6 +746,24 @@ document.getElementById("form").addEventListener("submit", function(e){
     var scored = [];
     pool.forEach(function(l){ var r = scoreListing(l, q, medians); if(r) scored.push(r); });
     scored.sort(function(a,b){ return b.score-a.score; });
+
+    // 같은 매물이 여러 부동산에 중복 등록된 경우 1건만 (단지·동·전용·층·향·가격 동일)
+    var seen = {};
+    scored = scored.filter(function(r){
+      var l = r.listing;
+      var k = [l.complexName,l.dong,l.exclusiveArea,l.floor,l.direction,l.price].join("|");
+      if(seen[k]) return false;
+      seen[k] = 1; return true;
+    });
+
+    // 한 단지가 결과를 독점하지 않도록 단지당 최대 2건까지만 상위 노출
+    var perComplex = {}, diversified = [], overflow = [];
+    scored.forEach(function(r){
+      var n = r.listing.complexName;
+      perComplex[n] = (perComplex[n]||0) + 1;
+      (perComplex[n] <= 2 ? diversified : overflow).push(r);
+    });
+    scored = diversified.concat(overflow);
 
     var dates = rows.map(function(l){return parseConfirmed(l.confirmedDate);}).filter(Boolean);
     var newest = dates.length ? new Date(Math.max.apply(null,dates.map(function(d){return d.getTime();}))) : null;

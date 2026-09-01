@@ -767,21 +767,53 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <div class="divider"><span class="d-line"></span><span class="d-badge">오송</span><span class="d-line"></span></div>
 
 <!-- ===== 나에게 맞는 아파트 추천 ===== -->
-<section class="section" id="recommend" style="background:var(--white);">
+<style>
+#recommend{background:linear-gradient(180deg,#FFFBEF 0%, #FFF6DC 55%, #FFFFFF 100%);overflow:hidden;}
+#recommend::before{content:'';position:absolute;top:-120px;right:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,var(--gold-pale) 0%,transparent 70%);pointer-events:none;}
+#recommend .reco-inner{position:relative;z-index:1;background:var(--white);border:1.6px solid var(--rose-deep);border-radius:var(--radius-lg);box-shadow:0 18px 46px rgba(25,31,40,0.12);padding:30px 22px 34px;}
+#recommend .reco-new{display:inline-flex;align-items:center;gap:6px;background:var(--rose);color:var(--rose-deep);font-weight:800;font-size:11px;letter-spacing:0.14em;padding:5px 12px;border-radius:20px;border:1.5px solid var(--rose-deep);}
+#recommend .reco-icons{display:flex;gap:10px;margin:20px 0 24px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none;}
+#recommend .reco-icons::-webkit-scrollbar{display:none;}
+#recommend .reco-icons .bldg{flex:0 0 auto;width:60px;height:60px;border-radius:15px;display:flex;align-items:center;justify-content:center;}
+#recommend .reco-icons .bldg svg{width:34px;height:34px;display:block;}
+#recommend .reco-icons .b-navy{background:var(--rose-deep);color:#fff;}
+#recommend .reco-icons .b-gold{background:var(--rose);color:var(--rose-deep);}
+#recommend .reco-icons .b-pale{background:var(--rose-pale);color:var(--rose-deep);border:1.5px solid var(--gold-pale);}
+#recommend .reco-h{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:clamp(24px,5.4vw,34px);line-height:1.32;color:var(--ink);letter-spacing:-0.01em;}
+#recommend .reco-h .hl{background:linear-gradient(transparent 62%, var(--gold-pale) 62%);padding:0 2px;}
+#recommend .reco-sub{color:var(--ink-soft);margin-top:12px;font-size:14.5px;line-height:1.7;max-width:540px;}
+#recommend .reco-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;}
+#recommend .reco-chips span{background:var(--cream-deep);border:1px solid var(--line);padding:8px 13px;border-radius:20px;font-size:12.5px;color:var(--ink);font-weight:600;}
+#recommend .reco-cta{display:inline-flex;align-items:center;gap:8px;margin-top:26px;background:var(--rose-deep);color:var(--cream);padding:15px 26px;border-radius:30px;font-size:15px;font-weight:800;box-shadow:0 10px 24px rgba(25,31,40,0.22);transition:.2s;}
+#recommend .reco-cta:hover{transform:translateY(-2px);}
+@media(min-width:760px){
+  #recommend .reco-inner{padding:40px 40px 44px;}
+  #recommend .reco-icons .bldg{width:66px;height:66px;}
+}
+</style>
+<section class="section" id="recommend">
   <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">맞춤 매물 찾기</div>
-      <h2>나에게 맞는<br>오송 아파트, 찾아드릴게요</h2>
-      <p class="section-sub">입주시기·예산·가족구성·중요하게 보는 조건만 입력하면, 매일 아침 수집하는 오송읍 14개 단지(민간임대 포함) 실시간 매물 중에서 조건에 맞는 매물을 골라드립니다.</p>
+    <div class="reco-inner">
+      <span class="reco-new">✦ NEW · 맞춤 매물 찾기</span>
+      <div class="reco-icons" aria-hidden="true">
+        <span class="bldg b-gold" title="아파트"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="4" width="16" height="25"/><path d="M6 29h20"/><path d="M13 9h2M17 9h2M13 14h2M17 14h2M13 19h2M17 19h2"/></svg></span>
+        <span class="bldg b-navy" title="고층 타워"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M16 2 22 8v21H10V8z"/><path d="M6 29h20"/><path d="M14 12h4M14 17h4M14 22h4"/></svg></span>
+        <span class="bldg b-pale" title="쌍둥이 동"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="10" width="10" height="19"/><rect x="18" y="5" width="10" height="24"/><path d="M2 29h28"/><path d="M7 15h4M7 20h4M21 11h4M21 16h4M21 21h4"/></svg></span>
+        <span class="bldg b-navy" title="테라스형"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 29V20h6v-6h6V8h8v21z"/><path d="M4 29h26"/><path d="M22 13h2M22 18h2M22 23h2M14 19h2M14 24h2"/></svg></span>
+        <span class="bldg b-gold" title="주상복합"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="6" y="6" width="20" height="23"/><path d="M4 29h24"/><path d="M11 11h3M18 11h3M11 16h3M18 16h3M11 21h3M18 21h3"/></svg></span>
+        <span class="bldg b-pale" title="저층 단지"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="14" width="24" height="15"/><path d="M4 14 16 6l12 8"/><path d="M10 20h3M19 20h3M14 24h4"/></svg></span>
+      </div>
+      <h2 class="reco-h">나에게 맞는 <span class="hl">오송 아파트</span>,<br>찾아드릴게요</h2>
+      <p class="reco-sub">입주시기·예산·가족구성, 그리고 중요하게 보는 조건만 알려주세요. 매일 아침 수집하는 <b style="color:var(--ink);">오송읍 14개 단지(민간임대 포함) 실시간 매물</b> 중에서 조건에 맞는 매물을 골라드립니다.</p>
+      <div class="reco-chips">
+        <span>🗓 입주시기·예산</span>
+        <span>👨‍👩‍👧 가족 구성</span>
+        <span>🏫 학군·오송역·소음·상권</span>
+        <span>🧭 향·층수</span>
+        <span>💰 실거주·투자</span>
+      </div>
+      <a href="/recommend/" class="reco-cta">맞춤 매물 추천받기 →</a>
     </div>
-    <div class="chip-row">
-      <span class="chip">입주시기 · 예산</span>
-      <span class="chip">가족 구성</span>
-      <span class="chip">학군 · 오송역 · 소음 · 상권</span>
-      <span class="chip">향 · 층수</span>
-      <span class="chip">실거주 · 투자</span>
-    </div>
-    <a href="/recommend/" class="btn btn-rose" style="margin-top:24px;">맞춤 매물 추천받기 →</a>
   </div>
 </section>
 
