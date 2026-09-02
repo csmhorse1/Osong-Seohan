@@ -96,6 +96,7 @@ input[inputmode]{padding-right:44px;text-align:right;}
 .matchbar{height:7px;border-radius:var(--r-pill);background:var(--fill);margin-top:12px;overflow:hidden;}
 .matchbar i{display:block;height:100%;border-radius:var(--r-pill);background:linear-gradient(90deg,#3B82F6,#1E3A8A);}
 .matchlbl{font-size:11.5px;font-weight:700;color:var(--blue);margin-top:5px;}
+.scorebd{font-size:10.5px;color:var(--fg-3);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:0;}
 .reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .reasons span{font-size:11px;font-weight:600;background:var(--blue-weak);color:var(--blue-d);padding:4px 8px;border-radius:var(--r-sm);}
 .reasons span.warn{background:var(--amber-weak);color:var(--amber);}
@@ -218,6 +219,8 @@ footer a{font-weight:700;text-decoration:none;}
         <button type="button" data-v="소음" aria-pressed="false">조용한 환경</button>
         <button type="button" data-v="상권" aria-pressed="false">상권·편의시설</button>
         <button type="button" data-v="커뮤니티" aria-pressed="false">커뮤니티 시설</button>
+        <button type="button" data-v="신축" aria-pressed="false">신축</button>
+        <button type="button" data-v="주차" aria-pressed="false">주차</button>
         <button type="button" data-v="향" aria-pressed="false">채광·향</button>
         <button type="button" data-v="층수" aria-pressed="false">층수</button>
       </div>
@@ -284,6 +287,9 @@ var MASTER_TAB = "매물현황";
  *    소음   : 조용한 정도 (높을수록 조용함)
  *    상권   : 상가·마트·편의시설
  *    커뮤니티: 단지 커뮤니티 시설 수준
+ *    주차   : 세대당 주차대수·주차 여유 (높을수록 여유)
+ *  ※ "신축" 점수는 따로 안 적습니다 — year(사용승인연도)로 자동 계산합니다.
+ *    (오늘 기준 5년 이내=5점 / 8년 이내=3 / 13년 이내=2 / 그 이상=1)
  *  name  : 구글시트 "단지명" 과 정확히 같게. aliases 에 다른 표기를 넣으면 같이 인식.
  *  rental:true 인 단지는 매물이 아니라 "이런 조건이면 임대도 고려" 카드로만 노출됩니다.
  * ==========================================================================*/
@@ -291,89 +297,89 @@ var COMPLEX_PROFILES = [
   { name:"오송역서한이다음노블리스", aliases:["서한이다음노블리스","오송서한이다음노블리스"],
     year:2021, households:1113, area:"봉산리",
     schools:"솔밭초·오송중 인근", directionsCommon:["남향","남동향","남서향"],
-    s:{학군:4, 오송역:5, 소음:3, 상권:4, 커뮤니티:4},
+    s:{학군:4, 오송역:5, 소음:3, 상권:4, 커뮤니티:4, 주차:5},
     note:"단지 내 상가에 미소부동산이 직접 입점. 오송역 도보권 대단지." },
 
   { name:"오송역동아라이크텐", aliases:["동아라이크텐","오송동아라이크텐"],
     year:2018, households:970, area:"연제리",
     schools:"초·중학교 도보권", directionsCommon:["남향"],
-    s:{학군:4, 오송역:3, 소음:4, 상권:3, 커뮤니티:3},
+    s:{학군:4, 오송역:3, 소음:4, 상권:3, 커뮤니티:3, 주차:4},
     note:"학교 가까운 조용한 실거주 단지. 오송역은 차량 이동 권장." },
 
   { name:"오송파라곤센트럴시티1단지", aliases:["오송파라곤센트럴시티1차","파라곤센트럴시티1단지","오송파라곤1단지"],
     year:2020, households:2415, area:"봉산리",
     schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향","남서향"],
-    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4, 주차:5},
     note:"오송역 서편 초대단지. 파라곤 상업지구·커뮤니티 인프라 우수." },
 
   { name:"오송파라곤센트럴시티2단지", tag:"민간임대",
     aliases:["오송역파라곤센트럴시티2차","오송역파라곤센트럴시티2차(민간임대)","파라곤센트럴시티2단지","오송파라곤2단지"],
     year:2024, households:1673, area:"봉산리",
     schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향"],
-    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4},
+    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4, 주차:5},
     note:"민간임대. 파라곤 상업지구 생활권. 8년 거주 후 분양전환형." },
 
   { name:"오송파라곤센트럴시티3단지", tag:"민간임대",
     aliases:["오송역파라곤센트럴시티3차","오송역파라곤센트럴시티3차(민간임대)","파라곤센트럴시티3단지","오송파라곤3단지"],
     year:2024, households:1500, area:"봉산리",
     schools:"봉산초(예정)·오송고 인근", directionsCommon:["남향","남동향"],
-    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4},
+    s:{학군:4, 오송역:4, 소음:3, 상권:5, 커뮤니티:4, 주차:5},
     note:"민간임대. 파라곤 생활권, 비교적 신축." },
 
   { name:"오송대광로제비앙1차", tag:"민간임대",
     aliases:["오송역대광로제비앙","오송역대광로제비앙(민간임대)","오송역대광로제비앙1차","대광로제비앙1차","오송대광1차"],
     year:2023, households:830, area:"봉산리",
     schools:"봉산리 학군", directionsCommon:["남향","남동향"],
-    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4, 주차:5},
     note:"민간임대. 보증금·월세 조건은 수시 변동 — 문의 필요." },
 
   { name:"오송대광로제비앙2차", tag:"민간임대",
     aliases:["오송역대광로제비앙그랜드센텀","오송역대광로제비앙그랜드센텀(민간임대)","대광로제비앙그랜드센텀","그랜드센텀","대광로제비앙2차","오송대광2차"],
     year:2024, households:1615, area:"봉산리",
     schools:"봉산리 학군", directionsCommon:["남향","남동향","남서향"],
-    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4},
+    s:{학군:4, 오송역:4, 소음:3, 상권:4, 커뮤니티:4, 주차:5},
     note:"민간임대 대단지(1,615세대). 8년 거주 후 분양전환형." },
 
   { name:"힐스테이트오송역퍼스트", aliases:["힐스테이트오송역","오송역힐스테이트퍼스트"],
     year:2026, households:1116, area:"봉산리(오송역 인접)",
     schools:"신설 학군", directionsCommon:["남향","남동향","남서향"],
-    s:{학군:3, 오송역:5, 소음:2, 상권:4, 커뮤니티:4},
+    s:{학군:3, 오송역:5, 소음:2, 상권:4, 커뮤니티:4, 주차:5},
     note:"오송역 바로 앞 신축. 역 접근성 최고, 다만 역세권 소음은 감안 필요." },
 
   { name:"오송힐데스하임", aliases:["힐데스하임","오송힐데스하임아파트"],
     year:2020, households:400, area:"만수리",
     schools:"인근 초등학교", directionsCommon:["남향"],
-    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:3},
+    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:3, 주차:4},
     note:"조용한 소단지. 오송역·상권은 차량 이동 필요." },
 
   { name:"오송대원칸타빌", aliases:["대원칸타빌","오송대원칸타빌아파트"],
     year:2010, households:600, area:"오송읍(구 오송)",
     schools:"오송초·오송중", directionsCommon:["남향","남동향"],
-    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2, 주차:2},
     note:"구 오송 생활권 실거주 단지. 가격 부담이 낮은 편, 오송역은 차량 이동." },
 
   { name:"오송상록롯데캐슬", aliases:["상록롯데캐슬","오송상록"],
     year:2008, households:700, area:"오송읍(구 오송)",
     schools:"오송초·오송중", directionsCommon:["남향","남동향"],
-    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2, 주차:2},
     note:"구 오송 대장 단지 중 하나. 학교 도보권, 생활 편의 무난." },
 
   { name:"오송경남아너스빌", aliases:["경남아너스빌","오송경남"],
     year:2008, households:600, area:"오송읍(구 오송)",
     schools:"오송초·오송중", directionsCommon:["남향"],
-    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2},
+    s:{학군:3, 오송역:2, 소음:4, 상권:3, 커뮤니티:2, 주차:2},
     note:"구 오송 생활권. 조용하고 실수요 위주." },
 
   { name:"오송모아미래도", aliases:["모아미래도","오송모아"],
     year:2007, households:500, area:"오송읍(구 오송)",
     schools:"오송초·오송중", directionsCommon:["남향"],
-    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:2},
+    s:{학군:3, 오송역:2, 소음:4, 상권:2, 커뮤니티:2, 주차:2},
     note:"구 오송 구축 단지. 가격 진입장벽이 가장 낮은 편." },
 
   { name:"오송호반베르디움", aliases:["호반베르디움","오송호반"],
     year:2019, households:700, area:"오송읍",
     schools:"인근 초·중학교", directionsCommon:["남향","남동향"],
-    s:{학군:3, 오송역:3, 소음:4, 상권:3, 커뮤니티:3},
+    s:{학군:3, 오송역:3, 소음:4, 상권:3, 커뮤니티:3, 주차:4},
     note:"구 오송권 중 비교적 신축. 조용한 실거주 선호 단지." },
 ];
 /* 참고: 소장님이 말한 "임대 4단지"(오송역대광로제비앙·그랜드센텀·파라곤센트럴시티2차·3차)는
@@ -448,7 +454,18 @@ function profileFor(complexName){
   }
   return null;
 }
-var DEFAULT_PROFILE = { s:{학군:3,오송역:3,소음:3,상권:3,커뮤니티:3}, note:"", directionsCommon:[] };
+var DEFAULT_PROFILE = { s:{학군:3,오송역:3,소음:3,상권:3,커뮤니티:3,주차:3}, note:"", directionsCommon:[] };
+
+/* 단지 정성점수 조회. "신축"은 year(사용승인연도)로 자동 계산(소장님: 사용승인 후 5년 이내=신축).
+   나머지 항목은 COMPLEX_PROFILES 의 s{} 값을 그대로 사용. 1~5 반환. */
+function qual(pf, key){
+  if(key==="신축"){
+    if(!pf || !pf.year) return 3;
+    var age = (new Date().getFullYear()) - pf.year;
+    return age<=5 ? 5 : age<=8 ? 3 : age<=13 ? 2 : 1;
+  }
+  return (pf && pf.s && pf.s[key]) || 3;
+}
 
 /* ---------- pill 토글 동작 ---------- */
 function setupPillset(id){
@@ -520,111 +537,118 @@ function parseConfirmed(s){
   return new Date(2000+ +m[1], +m[2]-1, +m[3]);
 }
 
-/* ---------- 매물 점수 ---------- */
+/* ---------- 매물 점수 ----------
+ *  소장님 배점(총 100점). "충족"하면 만점, 근접하면 부분점수, 초과/불일치는 감점 또는 제외.
+ *    #3 예산      40점   (매매/전세: 예산 이내 / 월세: 보증금 20 + 월세 20)
+ *    #4 입주 시기  20점
+ *    #5 가족 구성  10점   (가구원 수 → 적정 전용면적)
+ *    #6 중요항목   10점   (선택한 최대 3개 항목의 단지 점수 평균)
+ *    #7 선호 향    10점
+ *    #8 선호 층    10점
+ *  #1 목적·#2 거래유형은 배점 없음(거래유형은 매물 후보를 거르는 필터, 목적은 참고 태그).
+ */
 function scoreListing(l, q, medians){
   var pf = profileFor(l.complexName) || DEFAULT_PROFILE;
   var reasons = [], warns = [];
-  var score = 42;
-
-  /* 예산 */
+  var score = 0;
+  var P = {};                       // 항목별 획득 점수(디버깅/설명용)
   var pr = parsePriceField(l.dealType, l.price, l.rawText);
+
+  /* ===== #3 예산 — 40점 ===== */
   if(q.deal==="월세"){
     if(!isFinite(pr.deposit)) return null;
+    var pB = 0;
     if(isFinite(q.dep)){
-      if(pr.deposit<=q.dep){ score+=14; }
-      else if(pr.deposit<=q.dep*1.15){ score+=4; warns.push("보증금 약간 초과"); }
+      if(pr.deposit<=q.dep){ pB += 20; }
+      else if(pr.deposit<=q.dep*1.15){ pB += 8; warns.push("보증금 약간 초과"); }
       else return null;
-    }
-    if(isFinite(q.mon) && isFinite(pr.monthly)){
-      if(pr.monthly<=q.mon){ score+=12; reasons.push("월세 "+pr.monthly+"만"); }
-      else if(pr.monthly<=q.mon*1.15){ score+=3; warns.push("월세 약간 초과"); }
+    } else pB += 20;
+    if(isFinite(q.mon)){
+      if(!isFinite(pr.monthly)) pB += 10;
+      else if(pr.monthly<=q.mon){ pB += 20; reasons.push("월세 "+pr.monthly+"만 (예산 내)"); }
+      else if(pr.monthly<=q.mon*1.15){ pB += 8; warns.push("월세 약간 초과"); }
       else return null;
-    }
+    } else pB += 20;
+    P.예산 = pB; score += pB;
+    if(pB>=40) reasons.push("보증금·월세 예산 충족");
   } else {
     if(!isFinite(pr.sale)) return null;
-    if(isFinite(q.budget)){
-      if(pr.sale<=q.budget){ score+=20; reasons.push("예산 안에 있음"); }
-      else if(pr.sale<=q.budget*1.10){ score+=6; warns.push("예산 10% 이내 초과"); }
-      else return null;
-    }
+    if(!isFinite(q.budget)){ P.예산 = 40; score += 40; }
+    else if(pr.sale<=q.budget){ P.예산 = 40; score += 40; reasons.push("예산 안에 있음"); }
+    else if(pr.sale<=q.budget*1.10){ P.예산 = 18; score += 18; warns.push("예산 10% 이내 초과"); }
+    else return null;
   }
 
-  /* 면적 (가족 구성) */
+  /* ===== #4 입주 시기 — 20점 ===== */
+  if(q.movein==="미정"){ P.입주 = 20; score += 20; }
+  else if(l.dealType==="전세" || l.dealType==="월세"){ P.입주 = 20; score += 20; reasons.push("입주 시기 조율 가능"); }
+  else { P.입주 = 13; score += 13; warns.push("매매는 잔금·입주일 협의 필요"); }
+
+  /* ===== #5 가족 구성 → 전용면적 — 10점 ===== */
   var ex = parseFloat(l.exclusiveArea);
   var tgt = AREA_TARGET[q.family] || AREA_TARGET["4"];
   if(isFinite(ex)){
     if(ex>=tgt.min && ex<=tgt.max){
-      var d = Math.abs(ex-tgt.ideal)/(tgt.max-tgt.min);
-      score += 18*(1-Math.min(d,1));
+      var d = Math.abs(ex-tgt.ideal)/((tgt.max-tgt.min)/2);
+      var pF = 7 + 3*(1-Math.min(d,1));
+      P.가족 = pF; score += pF;
       reasons.push(q.familyLabel+" 가족에 맞는 "+Math.round(ex)+"㎡");
-    } else if(ex<tgt.min){ score+=2; warns.push("가족 수 대비 좁을 수 있음"); }
-    else { score+=6; warns.push("가족 수 대비 넓음(관리비↑)"); }
-  }
+    } else if(ex<tgt.min){ P.가족 = 3; score += 3; warns.push("가족 수 대비 좁을 수 있음"); }
+    else { P.가족 = 4; score += 4; warns.push("가족 수 대비 넓음(관리비↑)"); }
+  } else { P.가족 = 6; score += 6; }
 
-  /* 향 */
-  if(q.dirs.length){
-    if(q.dirs.indexOf(l.direction)>=0){ score+=12; reasons.push(l.direction); }
-    else { score-=4; }
-  } else {
-    if(["남향","남동향","남서향"].indexOf(l.direction)>=0){ score+=6; reasons.push(l.direction); }
-  }
-
-  /* 층 */
-  var fb = floorBand(l.floor);
-  if(q.floor!=="무관"){
-    if(fb===q.floor){ score+=10; reasons.push({저:"저층",중:"중층",고:"고층"}[fb]); }
-    else if(fb){ score-=2; }
-  } else if(fb==="중"||fb==="고"){ score+=3; }
-
-  /* 단지 정성 점수 × 중요항목 우선순위 */
-  var pri = q.priorities;
+  /* ===== #6 중요항목 (최대 3개) — 10점 ===== */
+  var pri = q.priorities || [];
   if(pri.length){
+    var sum = 0;
     pri.forEach(function(p){
-      var v = (p==="향"||p==="층수") ? 3 : (pf.s[p]||3);
-      score += (v-3)*5;            // 5점 → +10, 1점 → -10
+      var v = (p==="향" || p==="층수") ? 3 : qual(pf, p);
+      sum += v;
       if(v>=4){
-        var lbl = {학군:"학군 우수",오송역:"오송역 접근성 우수",소음:"조용한 편",상권:"상권 편리",커뮤니티:"커뮤니티 우수"}[p];
-        if(lbl) reasons.push(lbl+"(★"+v+")");
+        var lbl = {학군:"학군 우수",오송역:"오송역 접근성 우수",소음:"조용한 편",상권:"상권 편리",
+                   커뮤니티:"커뮤니티 우수",신축:"신축 단지",주차:"주차 여유"}[p];
+        if(lbl && reasons.indexOf(lbl)<0) reasons.push(lbl+"(★"+v+")");
       }
     });
+    var avg = sum/pri.length;                       // 1~5
+    var pP = 10 * Math.max(0, Math.min(1, (avg-2)/3));   // 평균 2 이하→0, 5→10
+    P.중요항목 = pP; score += pP;
+  } else { P.중요항목 = 6; score += 6; }
+
+  /* 자녀 학령이 있으면 학군을 조금 더 본다 (중요항목에 '학군'을 안 골랐어도) */
+  if(q.child!=="none" && pri.indexOf("학군")<0){
+    var sv = qual(pf, "학군");
+    score += (sv-3)*2;
+    if(sv>=4) reasons.push("자녀 학군 양호");
+  }
+
+  /* ===== #7 선호 향 — 10점 ===== */
+  if(q.dirs && q.dirs.length){
+    if(q.dirs.indexOf(l.direction)>=0){ P.향 = 10; score += 10; reasons.push(l.direction); }
+    else { P.향 = 0; warns.push("선호 향과 다름("+(l.direction||"정보 없음")+")"); }
   } else {
-    var avg = (pf.s.학군+pf.s.오송역+pf.s.소음+pf.s.상권+pf.s.커뮤니티)/5;
-    score += (avg-3)*6;
+    if(["남향","남동향","남서향"].indexOf(l.direction)>=0){ P.향 = 8; score += 8; reasons.push(l.direction); }
+    else { P.향 = 5; score += 5; }
   }
 
-  /* 자녀 학령 → 학군 가중 */
-  if(q.child!=="none"){
-    var sv = pf.s.학군||3;
-    score += (sv-3)*4;
-    if(sv>=4 && reasons.indexOf("학군 우수(★"+sv+")")<0) reasons.push("자녀 학군 양호");
-  }
+  /* ===== #8 선호 층 — 10점 ===== */
+  var fb = floorBand(l.floor);
+  if(q.floor!=="무관"){
+    if(fb===q.floor){ P.층 = 10; score += 10; reasons.push({저:"저층",중:"중층",고:"고층"}[q.floor]); }
+    else if(fb){ P.층 = 2; score += 2; warns.push("선호 층과 다름"); }
+    else { P.층 = 5; score += 5; }
+  } else { P.층 = 8; score += 8; }
 
-  /* 목적별 보정 */
+  /* ===== 투자 목적: 점수엔 영향 없이 참고 태그만 ===== */
   if(q.purpose==="투자"){
     var med = medians[l.complexName+"|"+l.dealType];
-    if(isFinite(med) && (pr.sale||pr.deposit) < med){ score+=10; reasons.push("같은 단지 시세보다 낮음"); }
-    if(isFinite(ex) && ex<60){ score+=6; reasons.push("소형 평형(임대 회전 유리)"); }
-    // 투자에서는 향/층/커뮤니티 비중을 낮춤 (위에서 이미 반영된 값 일부 상쇄)
-    score -= 4;
-  } else {
-    if((pf.s.소음||3)>=4) score+=3;
-    if((pf.s.커뮤니티||3)>=4) score+=2;
+    if(isFinite(med) && (pr.sale||pr.deposit) < med) reasons.push("같은 단지 시세보다 낮음");
+    if(isFinite(ex) && ex<60) reasons.push("소형 평형(임대 회전 유리)");
   }
-
-  /* 최신 매물 */
-  var cd = parseConfirmed(l.confirmedDate);
-  if(cd){
-    var days = (Date.now()-cd.getTime())/864e5;
-    if(days<=10){ score+=5; reasons.push("최근 확인 매물"); }
-    else if(days>60){ score-=3; }
-  }
-
-  /* 입주시기(참고) */
-  if(q.movein==="즉시" && (l.dealType==="전세"||l.dealType==="월세")) score+=3;
 
   return {
     listing:l, profile:pf, score:Math.max(0,Math.min(100,Math.round(score))),
-    price:pr, reasons:reasons.slice(0,5), warns:warns.slice(0,2), ex:ex, fb:fb,
+    parts:P, price:pr, reasons:reasons.slice(0,5), warns:warns.slice(0,2), ex:ex, fb:fb,
   };
 }
 
@@ -666,7 +690,7 @@ function renderResult(matched, q, meta){
   if(q.floor!=="무관") crit.push({저:"저층",중:"중층",고:"고층"}[q.floor]);
 
   var SHOW = 12;
-  var good = matched.filter(function(r){ return r.score>=72; }).length;
+  var good = matched.filter(function(r){ return r.score>=80; }).length;
   var shown = Math.min(matched.length, SHOW);
 
   var html = "";
@@ -690,7 +714,7 @@ function renderResult(matched, q, meta){
     html += '<div class="mcard">';
     html += '<div class="top"><div class="nm">'+esc(l.complexName)+
             ((r.profile&&r.profile.tag)?' <span class="deal 임대" style="font-size:10.5px;padding:2px 7px;vertical-align:middle;">'+esc(r.profile.tag)+'</span>':'')+
-            ' <small>'+esc(l.dong||"")+(l.agency?' · '+esc(l.agency):'')+'</small></div>';
+            ' <small>'+esc(l.dong||"")+'</small></div>';
     html += '<span class="deal '+esc(l.dealType)+'">'+esc(l.dealType)+'</span></div>';
     html += '<div class="price">'+esc(listingPriceText(l.dealType, r.price))+'</div>';
     html += '<div class="specrow">전용 '+(isFinite(r.ex)?Math.round(r.ex)+"㎡":(l.exclusiveArea||"-"))+
@@ -699,6 +723,14 @@ function renderResult(matched, q, meta){
             (l.confirmedDate?' · 확인 '+esc(l.confirmedDate):'')+'</div>';
     html += '<div class="matchbar"><i style="width:'+r.score+'%"></i></div>';
     html += '<div class="matchlbl">적합도 '+r.score+'점</div>';
+    if(r.parts){
+      var P = r.parts;
+      var bd = [["예산",P.예산,40],["입주",P.입주,20],["가족",P.가족,10],
+               ["중요항목",P.중요항목,10],["향",P.향,10],["층",P.층,10]]
+              .filter(function(x){ return x[1]!=null; })
+              .map(function(x){ return x[0]+" "+Math.round(x[1])+"/"+x[2]; }).join(" · ");
+      html += '<div class="scorebd">'+esc(bd)+'</div>';
+    }
     var tags = r.reasons.map(function(x){return '<span>'+esc(x)+'</span>';})
               .concat(r.warns.map(function(x){return '<span class="warn">'+esc(x)+'</span>';}));
     if(tags.length) html += '<div class="reasons">'+tags.join("")+'</div>';
@@ -747,11 +779,21 @@ document.getElementById("form").addEventListener("submit", function(e){
     pool.forEach(function(l){ var r = scoreListing(l, q, medians); if(r) scored.push(r); });
     scored.sort(function(a,b){ return b.score-a.score; });
 
-    // 같은 매물이 여러 부동산에 중복 등록된 경우 1건만 (단지·동·전용·층·향·가격 동일)
+    // 같은 매물이 여러 부동산에 중복 등록된 경우 1건만 남긴다.
+    // 부동산마다 표기가 조금씩 달라서(가격 "2억9,000"/"29000", 층 "저/25"/"3/25",
+    // 전용 "84.98"/"84.9821", 동 "101동"/"101") 원문 그대로 비교하면 중복이 안 걸린다.
+    // → 값을 정규화(숫자화·반올림·층밴드)해서 비교한다.
     var seen = {};
     scored = scored.filter(function(r){
       var l = r.listing;
-      var k = [l.complexName,l.dong,l.exclusiveArea,l.floor,l.direction,l.price].join("|");
+      var priceKey = r.price
+        ? (isFinite(r.price.sale) ? "s"+r.price.sale
+            : "m"+(r.price.deposit||0)+"/"+(r.price.monthly||0))
+        : String(l.price||"").replace(/[\s,]/g,"");
+      var areaKey = isFinite(r.ex) ? Math.round(r.ex) : String(l.exclusiveArea||"").replace(/\s/g,"");
+      var dongKey = String(l.dong||"").replace(/[\s동]/g,"");
+      var floorKey = r.fb || String(l.floor||"").replace(/\s/g,"");
+      var k = [l.complexName, l.dealType, dongKey, areaKey, floorKey, priceKey].join("|");
       if(seen[k]) return false;
       seen[k] = 1; return true;
     });
