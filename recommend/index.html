@@ -386,12 +386,13 @@ var COMPLEX_PROFILES = [
    위 목록의 오송대광로제비앙1차/2차, 오송파라곤센트럴시티2단지/3단지와 같은 단지다
    (네이버부동산이 분양/민간임대를 한 페이지로 묶음). tag:"민간임대"로 표시된다. */
 
-/* 가족 구성원 수 → 적정 전용면적(㎡) */
+/* 가족 구성원 수 → 적정 전용면적(㎡). 밴드는 넉넉하게(국내 실거주 기준
+   4인=전용 84~114㎡가 표준이라 119㎡도 '적정' 범위 안에 들어와야 함). */
 var AREA_TARGET = {
-  "1": { min:36, ideal:52, max:66 },
-  "3": { min:55, ideal:74, max:92 },
-  "4": { min:72, ideal:92, max:118 },
-  "5": { min:98, ideal:120, max:170 },
+  "1": { min:33, ideal:52, max:78 },
+  "3": { min:55, ideal:82, max:112 },
+  "4": { min:72, ideal:102, max:138 },
+  "5": { min:95, ideal:125, max:185 },
 };
 
 /* ---------- 유틸 ---------- */
@@ -593,8 +594,16 @@ function scoreListing(l, q, medians){
       var pF = 7 + 3*(1-Math.min(d,1));
       P.가족 = pF; score += pF;
       reasons.push(q.familyLabel+" 가족에 맞는 "+Math.round(ex)+"㎡");
-    } else if(ex<tgt.min){ P.가족 = 3; score += 3; warns.push("가족 수 대비 좁을 수 있음"); }
-    else { P.가족 = 4; score += 4; warns.push("가족 수 대비 넓음(관리비↑)"); }
+    } else if(ex<tgt.min){
+      // 밴드 밖이어도 절벽처럼 떨어지지 않게 — 벗어난 정도에 비례해 감점
+      var short = (tgt.min-ex)/tgt.min;                 // 0~
+      P.가족 = Math.max(2, 6 - short*22); score += P.가족;
+      if(short>0.12) warns.push("가족 수 대비 좁을 수 있음");
+    } else {
+      var over = (ex-tgt.max)/tgt.max;                  // 0~
+      P.가족 = Math.max(3, 6.5 - over*22); score += P.가족;
+      if(over>0.12) warns.push("가족 수 대비 넓음(관리비↑)");
+    }
   } else { P.가족 = 6; score += 6; }
 
   /* ===== #6 중요항목 (최대 3개) — 10점 ===== */
@@ -777,7 +786,19 @@ document.getElementById("form").addEventListener("submit", function(e){
     var pool = rows.filter(function(l){ return l.dealType===q.deal; });
     var scored = [];
     pool.forEach(function(l){ var r = scoreListing(l, q, medians); if(r) scored.push(r); });
-    scored.sort(function(a,b){ return b.score-a.score; });
+
+    // 동점(같은 단지의 비슷한 매물 등)일 때 순서를 정하는 보조 기준:
+    //  ① 최근에 확인된 매물이 위로  ② 예산 안에서 더 저렴한 매물이 위로
+    // 표시 점수(적합도)에는 영향 없음 — 점수가 똑같을 때만 작동.
+    scored.forEach(function(r){
+      var cd = parseConfirmed(r.listing.confirmedDate);
+      var days = cd ? (Date.now()-cd.getTime())/864e5 : 999;
+      var fresh = days<=3 ? 3 : days<=7 ? 2 : days<=14 ? 1 : 0;
+      var pv = r.price ? (r.price.sale || r.price.deposit || 0) : 0;
+      var cheaper = (isFinite(q.budget) && q.budget>0 && pv>0) ? (q.budget - pv)/q.budget : 0;
+      r.tiebreak = fresh*2 + cheaper*3;
+    });
+    scored.sort(function(a,b){ return (b.score - a.score) || (b.tiebreak - a.tiebreak); });
 
     // 같은 매물이 여러 부동산에 중복 등록된 경우 1건만 남긴다.
     // 부동산마다 표기가 조금씩 달라서(가격 "2억9,000"/"29000", 층 "저/25"/"3/25",
@@ -798,12 +819,12 @@ document.getElementById("form").addEventListener("submit", function(e){
       seen[k] = 1; return true;
     });
 
-    // 한 단지가 결과를 독점하지 않도록 단지당 최대 2건까지만 상위 노출
+    // 한 단지가 결과를 독점하지 않도록 단지당 최대 3건까지만 상위 노출, 나머지는 뒤로
     var perComplex = {}, diversified = [], overflow = [];
     scored.forEach(function(r){
       var n = r.listing.complexName;
       perComplex[n] = (perComplex[n]||0) + 1;
-      (perComplex[n] <= 2 ? diversified : overflow).push(r);
+      (perComplex[n] <= 3 ? diversified : overflow).push(r);
     });
     scored = diversified.concat(overflow);
 

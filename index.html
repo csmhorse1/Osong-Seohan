@@ -65,12 +65,12 @@ p{margin:0;}
 
 header.site{position:sticky;top:0;z-index:50;background:rgba(251,246,238,0.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
 .nav-bar{display:flex;align-items:center;justify-content:space-between;max-width:1080px;margin:0 auto;padding:14px 20px;gap:10px;}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand .pill{background:var(--rose-deep);color:var(--cream);font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.brand .pill{background:var(--rose-deep);color:var(--cream);font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;flex-shrink:0;}
 .brand .name-col{display:flex;flex-direction:column;line-height:1.25;}
-.brand .name{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);}
-.brand .tag{font-size:9.5px;color:var(--rose-deep);letter-spacing:0.1em;margin-top:1px;font-weight:600;}
-.nav-links{display:none;flex-wrap:nowrap;gap:12px;font-size:12.5px;font-weight:500;color:var(--ink-soft);flex-shrink:0;}
+.brand .name{font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);white-space:nowrap;}
+.brand .tag{font-size:9.5px;color:var(--rose-deep);letter-spacing:0.1em;margin-top:1px;font-weight:600;white-space:nowrap;}
+.nav-links{display:none;flex-wrap:nowrap;gap:9px;font-size:12px;font-weight:500;color:var(--ink-soft);flex-shrink:0;}
 .nav-links a{padding:6px 0;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;}
 .nav-links a:hover{color:var(--rose-deep);border-color:var(--rose);}
 .nav-cta{display:none;}
@@ -103,7 +103,9 @@ body.admin-mode .brand-edit-btn{display:inline-flex;}
 .mobile-menu .mm-foot{margin-top:auto;color:var(--ink-soft);font-size:13.5px;}
 .mobile-menu .mm-foot a{display:block;margin-top:6px;color:var(--rose-deep);font-weight:700;}
 
-@media (min-width:860px){
+/* 상단 가로 메뉴(12개 항목)는 브랜드명이 줄바꿈 없이 다 들어가는 폭(약 1120px)에서만 표시.
+   그보다 좁으면 햄버거 메뉴로 — 모바일 메뉴(#mobileMenu)에 동일 항목이 모두 들어 있음. */
+@media (min-width:1120px){
   .nav-links{display:flex;}
   .nav-cta{display:inline-flex;background:var(--rose);color:var(--ink);padding:10px 20px;border-radius:30px;font-size:13.5px;font-weight:800;white-space:nowrap;flex-shrink:0;}
   .burger{display:none;}
@@ -579,7 +581,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
-      <a href="/recommend/">맞춤추천</a>
+      <a href="/recommend/">맞춤매물찾기</a>
       <a href="#tour">투어신청</a>
       <a href="/tax/">보유세</a>
       <a href="/guarantee/">전세보증보험</a>
@@ -604,7 +606,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
     <a href="#about">대표소개</a>
     <a href="#daeum">오송서한이다음</a>
     <a href="#listings">매물</a>
-    <a href="/recommend/">맞춤 아파트 추천</a>
+    <a href="/recommend/">맞춤매물찾기</a>
     <a href="#tour">투어신청</a>
     <a href="/tax/">보유세 계산기</a>
     <a href="/guarantee/">전세보증보험 조회</a>
@@ -794,7 +796,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <section class="section" id="recommend">
   <div class="wrap">
     <div class="reco-inner">
-      <span class="reco-new">✦ NEW · 맞춤 매물 찾기</span>
+      <span class="reco-new">✦ NEW · 맞춤매물찾기</span>
       <div class="reco-icons" aria-hidden="true">
         <span class="bldg b-gold" title="아파트"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="4" width="16" height="25"/><path d="M6 29h20"/><path d="M13 9h2M17 9h2M13 14h2M17 14h2M13 19h2M17 19h2"/></svg></span>
         <span class="bldg b-navy" title="고층 타워"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M16 2 22 8v21H10V8z"/><path d="M6 29h20"/><path d="M14 12h4M14 17h4M14 22h4"/></svg></span>
@@ -812,7 +814,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
         <span>🧭 향·층수</span>
         <span>💰 실거주·투자</span>
       </div>
-      <a href="/recommend/" class="reco-cta">맞춤 매물 추천받기 →</a>
+      <a href="/recommend/" class="reco-cta">맞춤매물찾기 시작하기 →</a>
     </div>
   </div>
 </section>
@@ -1135,7 +1137,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
       <a href="#about">대표소개</a>
       <a href="#daeum">서한이다음</a>
       <a href="#listings">매물</a>
-      <a href="/recommend/">맞춤 아파트 추천</a>
+      <a href="/recommend/">맞춤매물찾기</a>
       <a href="#tour">투어신청</a>
       <a href="/tax/">보유세 계산기</a>
       <a href="/guarantee/">전세보증보험 조회</a>
