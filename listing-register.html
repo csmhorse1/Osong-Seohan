@@ -263,6 +263,17 @@
     margin-left:6px;
   }
   /* 제출 바 */
+  .auth-gate{display:none;background:#fff;border:1px solid #E5E8EB;border-radius:16px;padding:24px 20px;margin:16px 0;text-align:center;}
+  .auth-gate h2{font-size:18px;margin:0 0 8px;}
+  .auth-gate p{font-size:14px;color:#6B7280;margin:0 0 16px;line-height:1.6;}
+  .auth-gate form{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:0 auto;}
+  .auth-gate input{padding:13px 14px;border:1px solid #E5E8EB;border-radius:10px;font-size:16px;font-family:inherit;}
+  .auth-gate button{padding:14px;border:none;border-radius:30px;background:#191F28;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .auth-gate button:disabled{opacity:.6;}
+  .gate-error{min-height:18px;font-size:13px;color:#E5483D;}
+  .gate-back{display:inline-block;margin-top:14px;font-size:13px;color:#6B7280;}
+  body.auth-locked #listingForm, body.auth-locked .submitbar, body.auth-locked #progressBar{display:none !important;}
+  body.auth-locked .auth-gate{display:block;}
   .submitbar{
     position:fixed;
     bottom:0;left:0;right:0;
@@ -325,6 +336,18 @@
 
   <div class="progress" id="progressBar">
     <span class="active"></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="auth-gate" id="authGate">
+    <h2>사장님 로그인이 필요해요</h2>
+    <p>매물 등록·수정은 사장님 계정으로 로그인한 상태에서만 할 수 있어요.</p>
+    <form id="gateLoginForm">
+      <input type="email" id="gateEmail" placeholder="이메일" autocomplete="username" required>
+      <input type="password" id="gatePassword" placeholder="비밀번호" autocomplete="current-password" required>
+      <div class="gate-error" id="gateError"></div>
+      <button type="submit" id="gateSubmit">로그인</button>
+    </form>
+    <a href="index.html" class="gate-back">← 홈페이지로 돌아가기</a>
   </div>
 
   <div class="config-warning" id="configWarning">
@@ -643,6 +666,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeAuth, browserSessionPersistence, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   // ▼▼▼ 1) 기존 게시판/FAQ에서 쓰고 있는 firebaseConfig를 그대로 붙여넣어주세요 ▼▼▼
   const firebaseConfig = {
@@ -669,11 +693,14 @@
     document.getElementById('configWarning').style.display = 'none';
   }
 
-  let app, db;
+  let app, db, auth;
+  document.body.classList.add('auth-locked');
   try {
     if (isConfigured) {
       app = initializeApp(firebaseConfig);
       db = getFirestore(app);
+      // 홈페이지와 같은 로그인 상태를 사용 (이 탭을 닫으면 로그아웃)
+      auth = initializeAuth(app, { persistence: browserSessionPersistence });
     }
   } catch (e) {
     console.error("Firebase 초기화 오류:", e);
@@ -892,12 +919,36 @@
     }
   }
 
-  if (editId) {
-    if (isConfigured) {
-      loadListingForEdit(editId);
-    } else {
-      alert('Firebase 설정이 필요합니다. 설정을 먼저 완료해주세요.');
-    }
+  // ---------- 사장님 로그인 확인 (로그인해야 등록·수정 화면이 보임) ----------
+  let editLoaded = false;
+  if (auth) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.body.classList.remove('auth-locked');
+        if (editId && !editLoaded) { editLoaded = true; loadListingForEdit(editId); }
+      } else {
+        document.body.classList.add('auth-locked');
+      }
+    });
+    document.getElementById('gateLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('gateSubmit');
+      const errEl = document.getElementById('gateError');
+      btn.disabled = true; btn.textContent = '로그인 중...'; errEl.textContent = '';
+      try {
+        await signInWithEmailAndPassword(auth, document.getElementById('gateEmail').value.trim(), document.getElementById('gatePassword').value);
+        document.getElementById('gatePassword').value = '';
+      } catch (err) {
+        console.error(err);
+        errEl.textContent = (err.code === 'auth/too-many-requests')
+          ? '로그인 시도가 너무 많아요. 잠시 후 다시 시도해 주세요.'
+          : '이메일 또는 비밀번호가 올바르지 않아요.';
+      } finally {
+        btn.disabled = false; btn.textContent = '로그인';
+      }
+    });
+  } else if (editId) {
+    alert('Firebase 설정이 필요합니다. 설정을 먼저 완료해주세요.');
   }
 
   // ---------- 토스트 ----------

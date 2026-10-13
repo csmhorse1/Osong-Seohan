@@ -426,6 +426,15 @@ footer .f-links a:hover{color:var(--rose-deep);}
   align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);
 }
 .listing-modal-overlay.open{display:flex;}
+.admin-login{max-width:400px;}
+.admin-login .al-sub{font-size:13.5px;color:var(--ink-soft);margin:8px 0 18px;line-height:1.6;}
+.admin-login form{display:flex;flex-direction:column;gap:10px;}
+.admin-login input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:16px;font-family:inherit;background:var(--white);color:var(--ink);}
+.admin-login input:focus{outline:2px solid var(--rose);border-color:var(--rose);}
+.admin-login .btn{justify-content:center;border:none;cursor:pointer;margin-top:4px;}
+.admin-login .btn:disabled{opacity:.6;cursor:default;}
+.admin-login .al-error{min-height:18px;font-size:13px;color:#E5483D;}
+.admin-login .al-link{background:none;border:none;color:var(--ink-soft);font-size:13px;text-decoration:underline;cursor:pointer;padding:6px;font-family:inherit;}
 .listing-modal{
   background:var(--white);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;
   border-radius:24px 24px 0 0;padding:26px 20px 40px;position:relative;
@@ -552,6 +561,7 @@ footer .f-links a:hover{color:var(--rose-deep);}
 <!-- Firebase (게시판/FAQ 실시간 저장용) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -763,6 +773,22 @@ footer .f-links a:hover{color:var(--rose-deep);}
   <div class="listing-modal">
     <button class="lm-close" id="listingModalClose">×</button>
     <div id="listingModalBody"></div>
+  </div>
+</div>
+
+<!-- 사장님 로그인 (Firebase 이메일 로그인) -->
+<div id="adminLoginOverlay" class="listing-modal-overlay">
+  <div class="listing-modal admin-login">
+    <button class="lm-close" id="adminLoginClose" type="button">×</button>
+    <div class="lm-title">사장님 로그인</div>
+    <p class="al-sub">사장님 계정으로 로그인하면 매물·FAQ·후기 등을 수정할 수 있어요. 이 탭을 닫으면 자동으로 로그아웃돼요.</p>
+    <form id="adminLoginForm" autocomplete="on">
+      <input type="email" id="adminEmail" placeholder="이메일" autocomplete="username" required>
+      <input type="password" id="adminPassword" placeholder="비밀번호" autocomplete="current-password" required>
+      <div class="al-error" id="adminLoginError"></div>
+      <button type="submit" class="btn btn-rose" id="adminLoginSubmit">로그인</button>
+      <button type="button" class="al-link" id="adminResetPw">비밀번호를 잊으셨나요?</button>
+    </form>
   </div>
 </div>
 
@@ -1200,7 +1226,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const ADMIN_PASSCODE = 'osong1234';
+const auth = firebase.auth();
+/* 로그인은 이 탭이 열려 있는 동안만 유지 (탭/브라우저를 닫으면 자동 로그아웃) */
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(e => console.error('로그인 유지 설정 실패:', e));
 
 let posts = [];
 let isAdmin = false;
@@ -1218,7 +1246,7 @@ function escapeHtml(str){
 async function loadPosts(){
   try{
     const snap = await db.collection('posts').orderBy('createdAt', 'desc').get();
-    posts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    posts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(p => !p.deleted);
   }catch(e){
     console.error(e);
     posts = [];
@@ -1301,6 +1329,7 @@ document.getElementById('postListWrap').addEventListener('click', async (e)=>{
   if(delPostId){
     const post = posts.find(p => String(p.id) === delPostId);
     if(!post) return;
+    let visitorPw = null;
     if(!isAdmin){
       const pw = prompt('글 작성 시 입력한 비밀번호를 입력해 주세요.');
       if(pw === null) return;
@@ -1308,11 +1337,17 @@ document.getElementById('postListWrap').addEventListener('click', async (e)=>{
         showToast('비밀번호가 일치하지 않아요.');
         return;
       }
+      visitorPw = pw;
     } else {
       if(!confirm('이 글을 삭제할까요?')) return;
     }
     try{
-      await deletePostRemote(delPostId);
+      if(visitorPw !== null){
+        /* 방문자는 글을 '삭제됨'으로 숨김 처리 (보안 규칙이 작성 비밀번호를 확인) */
+        await db.collection('posts').doc(delPostId).update({ deleted: true, deleteKey: visitorPw });
+      } else {
+        await deletePostRemote(delPostId);
+      }
       posts = posts.filter(p => String(p.id) !== delPostId);
       showToast('삭제되었습니다.');
       renderPosts();
@@ -1388,46 +1423,115 @@ document.getElementById('postForm').addEventListener('submit', async (e)=>{
   }
 });
 
-document.getElementById('adminToggle').addEventListener('click', ()=>{
+/* 사장님 모드 = Firebase 이메일 로그인 상태.
+   같은 탭에서는 페이지를 이동·새로고침해도 유지되고, '사장님 모드' 버튼으로 로그아웃하거나
+   탭/브라우저를 닫으면 해제됩니다. 실제 수정 권한은 Firestore 보안 규칙이 로그인 계정으로 확인합니다. */
+function rerenderAdminSections(){
+  renderPosts();
+  renderAreaCards();
+  renderAreaTables();
+  renderAreaNews();
+  renderYoutube();
+  if(typeof renderLiveListingsList === 'function') renderLiveListingsList();
+}
+function enterAdminMode(silent){
+  isAdmin = true;
+  document.getElementById('adminToggle').classList.add('on');
+  document.getElementById('faqList').classList.add('admin-mode');
+  document.body.classList.add('admin-mode');
+  if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.add('admin-mode');
+  if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'inline-flex';
+  if(document.getElementById('tourAdminWrap')){
+    document.getElementById('tourAdminWrap').style.display = 'block';
+    loadTourRequests();
+  }
+  if(!silent) showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보·유튜브 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
+  rerenderAdminSections();
+}
+function exitAdminMode(silent){
+  isAdmin = false;
+  document.getElementById('adminToggle').classList.remove('on');
+  document.getElementById('faqList').classList.remove('admin-mode');
+  document.body.classList.remove('admin-mode');
+  if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.remove('admin-mode');
+  if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'none';
+  if(document.getElementById('tourAdminWrap')) document.getElementById('tourAdminWrap').style.display = 'none';
+  if(!silent) showToast('사장님 모드를 종료했어요.');
+  rerenderAdminSections();
+}
+
+/* ---- 로그인 창 ---- */
+const adminLoginOverlay = document.getElementById('adminLoginOverlay');
+function openAdminLogin(){
+  document.getElementById('adminLoginError').textContent = '';
+  adminLoginOverlay.classList.add('open');
+  setTimeout(()=>document.getElementById('adminEmail').focus(), 50);
+}
+function closeAdminLogin(){
+  adminLoginOverlay.classList.remove('open');
+  document.getElementById('adminPassword').value = '';
+}
+document.getElementById('adminLoginClose').addEventListener('click', closeAdminLogin);
+adminLoginOverlay.addEventListener('click', (e)=>{ if(e.target === adminLoginOverlay) closeAdminLogin(); });
+
+function loginErrorMessage(err){
+  const code = (err && err.code) || '';
+  if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-email','auth/invalid-login-credentials'].includes(code)) return '이메일 또는 비밀번호가 올바르지 않아요.';
+  if(code === 'auth/too-many-requests') return '로그인 시도가 너무 많아요. 잠시 후 다시 시도해 주세요.';
+  if(code === 'auth/network-request-failed') return '인터넷 연결을 확인해 주세요.';
+  return '로그인 중 문제가 발생했어요. (' + code + ')';
+}
+
+document.getElementById('adminLoginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('adminEmail').value.trim();
+  const pw = document.getElementById('adminPassword').value;
+  const btn = document.getElementById('adminLoginSubmit');
+  btn.disabled = true; btn.textContent = '로그인 중...';
+  try{
+    await auth.signInWithEmailAndPassword(email, pw);
+    closeAdminLogin();
+    /* 화면 전환은 onAuthStateChanged에서 처리 */
+  }catch(err){
+    console.error(err);
+    document.getElementById('adminLoginError').textContent = loginErrorMessage(err);
+  }finally{
+    btn.disabled = false; btn.textContent = '로그인';
+  }
+});
+
+document.getElementById('adminResetPw').addEventListener('click', async ()=>{
+  const email = document.getElementById('adminEmail').value.trim();
+  if(!email){ document.getElementById('adminLoginError').textContent = '이메일을 먼저 입력해 주세요.'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    document.getElementById('adminLoginError').textContent = '';
+    showToast('비밀번호 재설정 메일을 보냈어요. 메일함을 확인해 주세요.');
+  }catch(err){
+    console.error(err);
+    document.getElementById('adminLoginError').textContent = '재설정 메일을 보내지 못했어요. 이메일을 확인해 주세요.';
+  }
+});
+
+document.getElementById('adminToggle').addEventListener('click', async ()=>{
   if(isAdmin){
-    isAdmin = false;
-    document.getElementById('adminToggle').classList.remove('on');
-    document.getElementById('faqList').classList.remove('admin-mode');
-    document.body.classList.remove('admin-mode');
-    if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.remove('admin-mode');
-    if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'none';
-    if(document.getElementById('tourAdminWrap')) document.getElementById('tourAdminWrap').style.display = 'none';
-    showToast('사장님 모드를 종료했어요.');
-    renderPosts();
-    renderAreaCards();
-    renderAreaTables();
-    renderAreaNews();
-    renderYoutube();
+    try{ await auth.signOut(); }catch(e){ console.error(e); exitAdminMode(); }
     return;
   }
-  const pw = prompt('사장님 모드 비밀번호를 입력해 주세요.');
-  if(pw === null) return;
-  if(pw === ADMIN_PASSCODE){
-    isAdmin = true;
-    document.getElementById('adminToggle').classList.add('on');
-    document.getElementById('faqList').classList.add('admin-mode');
-    document.body.classList.add('admin-mode');
-    if(document.getElementById('reviewScroller')) document.getElementById('reviewScroller').classList.add('admin-mode');
-    if(document.getElementById('listingRegisterBtn')) document.getElementById('listingRegisterBtn').style.display = 'inline-flex';
-    if(document.getElementById('tourAdminWrap')){
-      document.getElementById('tourAdminWrap').style.display = 'block';
-      loadTourRequests();
-    }
-    showToast('사장님 모드가 켜졌어요. FAQ·후기·지역정보·유튜브 작성, 게시판 답변·삭제, 매물 등록이 가능합니다.');
-    renderPosts();
-    renderAreaCards();
-    renderAreaTables();
-    renderAreaNews();
-    renderYoutube();
-  } else {
-    showToast('비밀번호가 올바르지 않아요.');
-  }
+  openAdminLogin();
+});
 
+/* 로그인 상태가 바뀌거나, 페이지가 다시 열릴 때(매물 수정 후 복귀, 새로고침 등) 자동 반영 */
+let adminAuthInitialized = false;
+auth.onAuthStateChanged((user)=>{
+  const firstCall = !adminAuthInitialized;
+  adminAuthInitialized = true;
+  if(user && !isAdmin){
+    enterAdminMode(firstCall);
+    if(firstCall) showToast('사장님 모드 유지 중이에요.');
+  } else if(!user && isAdmin){
+    exitAdminMode(false);
+  }
 });
 
 /* ===================== FAQ (Firestore 동적 렌더링, 사장님 모드에서 질문 추가/수정/삭제) ===================== */
