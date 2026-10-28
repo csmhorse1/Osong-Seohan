@@ -2977,5 +2977,33 @@ document.getElementById('quickConsultForm')?.addEventListener('submit', async (e
   }
 });
 </script>
+<!-- ===== 게시내용 복사 방지 (사장님 모드에서는 해제) ===== -->
+<style>
+body:not(.admin-mode){-webkit-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}
+body:not(.admin-mode) img{-webkit-user-drag:none;pointer-events:auto;}
+input,textarea,select,[contenteditable="true"]{-webkit-user-select:text !important;user-select:text !important;}
+</style>
+<script>
+(function(){
+  function allowed(e){
+    if(document.body.classList.contains('admin-mode')) return true;
+    var t = e.target;
+    return t && t.closest && t.closest('input,textarea,select,[contenteditable="true"]');
+  }
+  ['copy','cut','contextmenu','dragstart','selectstart'].forEach(function(ev){
+    document.addEventListener(ev, function(e){
+      if(allowed(e)) return;
+      e.preventDefault();
+      if(ev==='copy' && typeof showToast==='function') showToast('이 페이지의 내용은 복사할 수 없어요.');
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(allowed(e)) return;
+    var k = (e.key||'').toLowerCase();
+    if((e.ctrlKey||e.metaKey) && ['c','x','a','s','u','p'].indexOf(k)>-1){ e.preventDefault(); }
+    if(e.key==='F12' || ((e.ctrlKey||e.metaKey) && e.shiftKey && ['i','j','c'].indexOf(k)>-1)){ e.preventDefault(); }
+  });
+})();
+</script>
 </body>
 </html>
